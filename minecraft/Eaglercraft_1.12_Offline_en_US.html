@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Eaglercraft Offline 1.12</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+html, body {
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: black;
+}
+canvas {
+    width: 100vw !important;
+    height: 100vh !important;
+}
+</style>
+
+</head>
+<body>
+
+<script>
+// =============================================
+//   EAGLERCRAFT 1.12 OFFLINE (SINGLE HTML FILE)
+//      Full credit to LAX1DUDE / Snubby etc.
+// =============================================
+
+// Create the canvas automatically
+setTimeout(() => {
+    if (!document.getElementById("eaglerCanvas")) {
+        let c = document.createElement("canvas");
+        c.id = "eaglerCanvas";
+        c.width = innerWidth;
+        c.height = innerHeight;
+        document.body.appendChild(c);
+    }
+}, 10);
+
+// Load the main Eaglercraft engine from CDN
+(function(){
+    let script = document.createElement("script");
+    script.src = "https://rawcdn.githack.com/web-eaglercraft/eaglercraft-1.12-offline/main/eaglercraft.js";
+    document.body.appendChild(script);
+})();
+</script>
+
+</body>
+</html>

@@ -6,138 +6,328 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <style>
-body { margin:0; background:#111; color:white; font-family:Arial; }
-header { display:flex; align-items:center; padding:15px; background:#000; }
-#search { margin-left:auto; padding:8px; border-radius:6px; border:none; width:260px; }
+/* --------------------------
+   GLOBAL + DARK/LIGHT MODE
+-----------------------------*/
+:root {
+  --bg: #111;
+  --bg2: #1a1a1a;
+  --text: #fff;
+  --accent: #4caf50;
+  --sidebar-bg: #0d0d0d;
+  --sidebar-width: 60px;
+  --sidebar-expanded: 200px;
+}
 
-.section { padding:20px; }
-.row { display:flex; gap:20px; overflow-x:auto; }
+body.light {
+  --bg: #f7f7f7;
+  --bg2: #e6e6e6;
+  --text: #111;
+  --sidebar-bg: #ddd;
+}
 
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+}
+
+/* --------------------------
+      SIDEBAR (COLLAPSIBLE)
+-----------------------------*/
+#sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: var(--sidebar-width);
+  height: 100%;
+  background: var(--sidebar-bg);
+  overflow: hidden;
+  transition: width .25s ease;
+  z-index: 999;
+  display: flex;
+  flex-direction: column;
+}
+#sidebar:hover {
+  width: var(--sidebar-expanded);
+}
+.sidebar-item {
+  padding: 15px;
+  cursor: pointer;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.sidebar-item:hover {
+  background: rgba(255,255,255,0.1);
+}
+
+/* --------------------------
+        MAIN CONTENT
+-----------------------------*/
+#main {
+  margin-left: var(--sidebar-width);
+  transition: margin-left .25s ease;
+  padding: 20px;
+}
+#sidebar:hover ~ #main {
+  margin-left: var(--sidebar-expanded);
+}
+
+.section {
+  padding: 20px;
+}
+.row {
+  display: flex;
+  gap: 20px;
+  overflow-x: auto;
+  padding-bottom: 10px;
+}
+
+/* --------------------------
+          CARDS
+-----------------------------*/
 .card {
-  width:260px;
-  background:#222;
-  padding:10px;
-  border-radius:10px;
-  cursor:pointer;
+  min-width: 260px;
+  background: var(--bg2);
+  padding: 12px;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: transform .15s ease;
 }
-.card img { width:100%; border-radius:10px; }
+.card:hover {
+  transform: scale(1.05);
+}
+.card img {
+  width: 100%;
+  border-radius: 10px;
+}
 .card button {
-  width:100%;
-  margin-top:10px;
-  padding:10px;
-  background:#4CAF50;
-  color:white;
-  border:none;
-  border-radius:6px;
+  width: 100%;
+  padding: 10px;
+  margin-top: 10px;
+  background: var(--accent);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
 }
 
-#embed-container { position:fixed; inset:0; background:#000; display:none; z-index:9999; }
-#embed-frame { width:100%; height:100%; border:none; }
+/* --------------------------
+         EMBED PLAYER
+-----------------------------*/
+#embed-container {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.95);
+  display: none;
+  z-index: 9999;
+}
+#embed-frame {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
 #spinner {
-  position:absolute; top:50%; left:50%; transform:translate(-50%,-50%);
-  color:white; font-size:26px; display:none;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 30px;
 }
-</style>
 
+/* --------------------------
+      TOP SEARCH BAR
+-----------------------------*/
+#search {
+  padding: 10px;
+  width: 250px;
+  border-radius: 8px;
+  border: none;
+  background: var(--bg2);
+  color: var(--text);
+}
+
+</style>
 </head>
 <body>
+
+<!-- --------------------------
+         SIDEBAR MENU
+----------------------------- -->
+<div id="sidebar">
+  <div class="sidebar-item" onclick="scrollToSection('games')">🎮 Games</div>
+  <div class="sidebar-item" onclick="scrollToSection('downloads')">⬇ Downloads</div>
+  <div class="sidebar-item" onclick="scrollToSection('categories')">📂 Categories</div>
+  <div class="sidebar-item" onclick="toggleTheme()">🌗 Theme</div>
+  <div class="sidebar-item" onclick="panic()">⚠ Panic</div>
+</div>
+
+<!-- --------------------------
+         MAIN CONTENT
+----------------------------- -->
+<div id="main">
 
 <header>
   <input id="search" placeholder="Search games...">
 </header>
 
-<div class="section">
+<div class="section" id="downloads">
   <h1>Downloads</h1>
-  <div class="row">
-    <div class="card">
-      <img src="thumbnails/minecraft.png">
-      <a href="https://drive.google.com/uc?export=download&id=1lQnwB_6FZ-wPXQPg3NxcBTEVJRFxY00u">
-        <button>Download Minecraft</button>
-      </a>
-    </div>
-
-    <div class="card">
-      <img src="thumbnails/slope.png">
-      <a href="https://drive.google.com/uc?export=download&id=1IS41Lxh7Yuu4QZh7AcyhUGng_PuhwiEP">
-        <button>Download Slope</button>
-      </a>
-    </div>
-
-    <div class="card">
-      <img src="thumbnails/subawysurfers.png">
-      <a href="https://drive.google.com/uc?export=download&id=10UUI0JaXaQk5eKckAz_-o74s0aVdiL0J">
-        <button>Download Subway Surfers</button>
-      </a>
-    </div>
-  </div>
+  <div class="row" id="download-row"></div>
 </div>
 
-<div class="section">
+<div class="section" id="games">
   <h1>Games</h1>
-  <div class="row">
-
-    <div class="card" onclick="openEmbed('https://jeremy4401.github.io/slime-rancher/')">
-      <img src="thumbnails/slimerancher.png">
-      <button>Slime Rancher</button>
-    </div>
-
-    <div class="card" onclick="openEmbed('https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/index.html')">
-      <img src="thumbnails/buckshotroulette.png">
-      <button>Buckshot Roulette</button>
-    </div>
-
-    <div class="card" onclick="openEmbed('https://classic.minecraft.net/')">
-      <img src="thumbnails/minecraft.png">
-      <button>Minecraft</button>
-    </div>
-
-    <div class="card" onclick="openEmbed('https://jeremy4401.github.io/SME-Theater')">
-      <img src="thumbnails/theater.png">
-      <button>Theater</button>
-    </div>
-
- <div class="card" onclick="openEmbed('https://jeremy4401.github.io/Proxies/')">
-      <img src="thumbnails/proxy.png">
-      <button>Proxies</button>
-    </div>
-
-    
-  </div>
+  <div class="row" id="game-row"></div>
 </div>
 
+<div class="section" id="categories">
+  <h1>Categories</h1>
+  <div id="cat-list"></div>
+</div>
+
+</div> <!-- main -->
+
+<!-- --------------------------
+       EMBED CONTAINER
+----------------------------- -->
 <div id="embed-container">
   <div id="spinner">Loading...</div>
   <iframe id="embed-frame"></iframe>
 </div>
 
 <script>
-function openEmbed(url){
-  const cont = document.getElementById('embed-container');
-  const frame = document.getElementById('embed-frame');
-  const spin = document.getElementById('spinner');
+/* --------------------------
+      ULTRAVIOLET ENCODER
+----------------------------- */
+const uvHost = "https://holyubofficial.net/service/";
+function uvEncode(url) {
+  return uvHost + btoa(url).replace(/=/g,"");
+}
 
-  cont.style.display = 'block';
-  spin.style.display = 'block';
-  frame.onload = ()=> spin.style.display='none';
+/* --------------------------
+      GAME + DOWNLOAD DATA
+----------------------------- */
+const downloads = [
+  {
+    name: "Minecraft",
+    img: "thumbnails/minecraft.png",
+    link: "https://drive.google.com/uc?export=download&id=1lQnwB_6FZ-wPXQPg3NxcBTEVJRFxY00u"
+  },
+  {
+    name: "Slope",
+    img: "thumbnails/slope.png",
+    link: "https://drive.google.com/uc?export=download&id=1IS41Lxh7Yuu4QZh7AcyhUGng_PuhwiEP"
+  },
+  {
+    name: "Subway Surfers",
+    img: "thumbnails/subawysurfers.png",
+    link: "https://drive.google.com/uc?export=download&id=10UUI0JaXaQk5eKckAz_-o74s0aVdiL0J"
+  }
+];
+
+const games = [
+  {name:"Slime Rancher", img:"thumbnails/slimerancher.png", url:"https://jeremy4401.github.io/slime-rancher/", cat:"Action"},
+  {name:"Minecraft Classic", img:"thumbnails/minecraft.png", url:"https://classic.minecraft.net/", cat:"Survival"},
+  {name:"Buckshot Roulette", img:"thumbnails/buckshotroulette.png", url:"https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/index.html", cat:"Horror"},
+  {name:"Theater", img:"thumbnails/theater.png", url:"https://jeremy4401.github.io/SME-Theater", cat:"Other"},
+  {name:"Proxies", img:"thumbnails/proxy.png", url:"https://jeremy4401.github.io/Proxies", cat:"Tools"}
+];
+
+/* --------------------------
+        LOAD CARDS
+----------------------------- */
+function loadCards() {
+  const drow = document.getElementById("download-row");
+  downloads.forEach(d => {
+    drow.innerHTML += `
+      <div class="card">
+        <img src="${d.img}">
+        <a href="${d.link}"><button>${d.name}</button></a>
+      </div>
+    `;
+  });
+
+  const grow = document.getElementById("game-row");
+  games.forEach(g => {
+    grow.innerHTML += `
+      <div class="card" onclick="openEmbed('${uvEncode(g.url)}')">
+        <img src="${g.img}">
+        <button>${g.name}</button>
+      </div>
+    `;
+  });
+}
+loadCards();
+
+/* --------------------------
+        EMBED SYSTEM
+----------------------------- */
+function openEmbed(url){
+  const cont = document.getElementById("embed-container");
+  const frame = document.getElementById("embed-frame");
+  const spin = document.getElementById("spinner");
+
+  cont.style.display = "block";
+  spin.style.display = "block";
+  frame.onload = ()=> spin.style.display="none";
   frame.src = url;
 }
 
-document.addEventListener('keydown', e=>{
-  if(e.key==='Escape'){
-    document.getElementById('embed-container').style.display='none';
-    document.getElementById('embed-frame').src='';
+document.addEventListener("keydown", e=>{
+  if(e.key==="Escape"){
+    document.getElementById("embed-container").style.display="none";
+    document.getElementById("embed-frame").src="";
   }
-  if(e.key==='m') document.body.classList.toggle('dark');
-  if(e.key==='p') document.body.classList.toggle('performance');
+  if(e.key==="F") toggleFullscreen();
+  if(e.key==="Q") panic();
+  if(e.key==="T") toggleTheme();
 });
 
-document.getElementById('search').addEventListener('input', e=>{
+/* --------------------------
+        FULLSCREEN MODE
+----------------------------- */
+function toggleFullscreen() {
+  const iframe = document.getElementById("embed-frame");
+  if (!document.fullscreenElement) iframe.requestFullscreen();
+  else document.exitFullscreen();
+}
+
+/* --------------------------
+       SEARCH FILTER
+----------------------------- */
+document.getElementById("search").addEventListener("input", e=>{
   const q = e.target.value.toLowerCase();
-  document.querySelectorAll('.card').forEach(c=>{
-    const text = c.innerText.toLowerCase();
-    c.style.display = text.includes(q) ? 'block' : 'none';
+  document.querySelectorAll(".card").forEach(card=>{
+    card.style.display = card.innerText.toLowerCase().includes(q) ? "block" : "none";
   });
 });
+
+/* --------------------------
+       THEME TOGGLE
+----------------------------- */
+function toggleTheme() {
+  document.body.classList.toggle("light");
+  localStorage.setItem("theme", document.body.classList.contains("light") ? "light" : "dark");
+}
+if(localStorage.getItem("theme")==="light") document.body.classList.add("light");
+
+/* --------------------------
+       PANIC (FAST EXIT)
+----------------------------- */
+function panic() {
+  window.location.href = "https://classroom.google.com";
+}
+
+/* --------------------------
+       AUTO SCROLL
+----------------------------- */
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({behavior:"smooth"});
+}
 </script>
 
 </body>

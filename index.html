@@ -539,9 +539,9 @@ renderHome();
 
 /* GAME LIST */
 let games = [
-  {name:"Slime Rancher", img:"slimerancher.png", url:"https://jeremy4401.github.io/slime-rancher/", cat:"Action"},
-  {name:"Minecraft Classic", img:"minecraft.png", url:"https://classic.minecraft.net/", cat:"Survival"},
-  {name:"Buckshot Roulette", img:"buckshotroulette.png", url:"https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/index.html", cat:"Horror"}
+  {name:"Slime Rancher", img:"thumbnails/slimerancher.png", url:"https://jeremy4401.github.io/slime-rancher/", cat:"Action"},
+  {name:"Minecraft Classic", img:"thumbnails/minecraft.png", url:"https://classic.minecraft.net/", cat:"Survival"},
+  {name:"Buckshot Roulette", img:"thumbnauks/buckshotroulette.png", url:"https://cdn.jsdelivr.net/gh/genizy/web-port@main/buckshot-roulette/index.html", cat:"Horror"}
 ];
 
 /* FAVORITE STORAGE */
@@ -566,6 +566,14 @@ function renderGames(){
 
   let html = `
     <h1>Games</h1>
+   
+<h1>Slime Rancher</h1>
+
+    <!-- Preview Image -->
+    <img src="thumbnails/slimerancher.png" class="preview" alt="Game Preview">
+
+    <!-- Embedded Game -->
+    <iframe src="https://jeremy4401.github.io/slime-rancher/" allowfullscreen></iframe>
 
     <div style="margin-bottom:15px;">
       <input id="gameSearch" placeholder="Search games..."

@@ -567,13 +567,25 @@ function renderGames(){
   let html = `
     <h1>Games</h1>
    
-<h1>Slime Rancher</h1>
+ <h1>Slime Rancher</h1>
 
-    <!-- Preview Image -->
-    <img src="thumbnails/slimerancher.png" class="preview" alt="Game Preview">
+    <!-- Clickable Preview Image -->
+    <img id="preview" src="slimerancher.png" alt="Game Preview">
 
-    <!-- Embedded Game -->
-    <iframe src="https://jeremy4401.github.io/slime-rancher/" allowfullscreen></iframe>
+    <!-- Embedded Game (hidden until clicked) -->
+    <iframe id="gameFrame" src="" allowfullscreen></iframe>
+
+    <script>
+        const preview = document.getElementById("preview");
+        const gameFrame = document.getElementById("gameFrame");
+
+        // Game URL:
+        const gameURL = "https://jeremy4401.github.io/slime-rancher;
+
+        preview.addEventListener("click", () => {
+            preview.style.display = "none";   // Hide image
+            gameFrame.src = gameURL;          // Load game
+            gameFrame.style.display = "block"; // Show iframe
 
     <div style="margin-bottom:15px;">
       <input id="gameSearch" placeholder="Search games..."

@@ -143,12 +143,13 @@
     }
 
     .card img {
-      width: 120%;
-      height: 280px;
-      object-fit: cover;
-      border-radius: 10px;
-    }
-
+  width: 100%;
+  height: auto;
+  max-height: 260px; /* keeps them from getting too tall */
+  object-fit: contain; /* shows full PNG without cropping */
+  border-radius: 10px;
+  display: block;
+}
     .star {
       position: absolute;
       top: 8px;

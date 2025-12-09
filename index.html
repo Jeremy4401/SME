@@ -251,6 +251,27 @@
         transform: translateY(0);
       }
     }
+  #homeBtn {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  width: 55px;
+  height: 55px;
+  background: var(--accent);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 26px;
+  cursor: pointer;
+  z-index: 5000;
+  box-shadow: 0 0 10px #0008;
+  transition: 0.2s;
+}
+#homeBtn:hover {
+  transform: scale(1.15);
+}
   </style>
 </head>
 
@@ -269,6 +290,9 @@
     <div onclick="panic()">⚠</div>
   </div>
 
+<!-- HOME BUTTON -->
+<div id="homeBtn" onclick="goHome()">🏠</div>
+  
   <!-- MAIN -->
   <div id="main">
     <h1 id="pageTitle">Home</h1>
@@ -1355,13 +1379,52 @@
       document.getElementById("embedFrame").src = url;
     }
 
-    document.addEventListener("keydown", (e) => {
-      if (e.key === "Escape") {
-        document.getElementById("embedWin").style.display = "none";
-        document.getElementById("embedFrame").src = "";
-        stopPlayTimer();
-      }
-    });
+   document.addEventListener("keydown", (e) => {
+  if (e.key === "Escape") {
+
+    // Force iframe to give back keyboard focus
+    document.getElementById("embedFrame").blur();
+    window.focus();
+
+    // Close embed
+    const win = document.getElementById("embedWin");
+    const frame = document.getElementById("embedFrame");
+
+    win.style.display = "none";
+    frame.src = "";
+
+    // Stop timers + rich presence
+    stopPlayTimer();
+    setPresence("Browsing Games");
+
+    // Navigate back to games page
+    nav("games");
+  }
+});
+
+// ============================
+// HOME BUTTON LOGIC
+// ============================
+
+function goHome() {
+  const win = document.getElementById("embedWin");
+  const frame = document.getElementById("embedFrame");
+
+  // If a game is open, close it
+  if (win.style.display === "block") {
+    win.style.display = "none";
+    frame.src = "";
+
+    stopPlayTimer();
+    setPresence("Browsing Games");
+    nav("games");
+    window.focus();
+    return;
+  }
+
+  // Otherwise go to home dashboard
+  nav("homeDashboard");
+}
 
     /* Initial game renders */
     renderGames();
@@ -1914,15 +1977,24 @@
     }
 
     const oldPlayP = play;
-    play = function (url) {
-      const g = games.find((x) => enc(x.url) === url);
-      if (g) {
-        startPlayTimer(g.name);
-        setPresence("Playing " + g.name);
-        gainXP(20);
-      }
-      oldPlayP(url);
-    };
+play = function (url) {
+  const g = games.find((x) => enc(x.url) === url);
+  if (g) {
+    startPlayTimer(g.name);
+    setPresence("Playing " + g.name);
+    gainXP(20);
+  }
+
+  oldPlayP(url);
+
+  // Prevent iframe from stealing keyboard ESC key
+  setTimeout(() => {
+    const frame = document.getElementById("embedFrame");
+    frame.blur();
+    window.focus();
+  }, 300);
+};
+
 
     const oldOpenDetailP = openGameDetails;
     openGameDetails = function (name) {

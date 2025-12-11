@@ -2,24 +2,91 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8" />
-    <title>SME Launcher</title>
+    <title>SME Launcher - 🎄 Christmas Edition</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
     <style>
+        /* =====================================
+           [1] CHRISTMAS THEME VARIABLES
+        ===================================== */
         @font-face {
             font-family: "Comic Sans MS";
             src: local("Comic Sans MS");
         }
 
         :root {
-            --bg: #0f0f0f;
-            --bg2: #1a1a1a;
-            --text: #fff;
-            --accent: #4caf50;
-            --sidebar: #000;
-            --banner1: #000;
-            --banner2: #0f0f0f;
+            --bg: #1a1a1a;        /* Deep Gray/Dark background */
+            --bg2: #2d2d2d;       /* Card background */
+            --text: #ffffff;      /* White text */
+            --accent: #e53935;    /* Christmas Red */
+            --secondary-accent: #4caf50; /* Christmas Green */
+            --sidebar: #000000;   /* Black sidebar */
+            --gold: #ffeb3b;      /* Gold accent for stars/highlights */
         }
+
+        body.light {
+            --bg: #f0f4f8;        /* Light Blue-Gray */
+            --bg2: #ffffff;
+            --text: #111111;
+            --accent: #c62828;    /* Darker Red */
+            --secondary-accent: #388e3c;
+            --sidebar: #192a3e;   /* Dark Navy */
+        }
+
+        /* =====================================
+           [2] SNOW BACKGROUND ANIMATION
+        ===================================== */
+        #snow-layer {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none; /* Allows clicks to pass through */
+            z-index: 100;
+        }
+
+        .snowflake {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #fff;
+            border-radius: 50%;
+            animation: snowfall linear infinite;
+            opacity: 0.8;
+            box-shadow: 0 0 5px rgba(255, 255, 255, 0.5);
+        }
+
+        @keyframes snowfall {
+            0% {
+                transform: translateY(-100vh);
+            }
+            100% {
+                transform: translateY(100vh);
+            }
+        }
+        
+        /* Apply varying speeds and sizes to the snowflakes */
+        .snowflake:nth-child(even) {
+            animation-duration: 15s;
+            animation-delay: -5s;
+            width: 6px;
+            height: 6px;
+            opacity: 0.6;
+        }
+
+        .snowflake:nth-child(3n) {
+            animation-duration: 25s;
+            animation-delay: -10s;
+            width: 12px;
+            height: 12px;
+            opacity: 0.9;
+        }
+
+
+        /* =====================================
+           [3] BASE STYLES AND LAYOUT
+        ===================================== */
 
         body {
             margin: 0;
@@ -27,17 +94,12 @@
             color: var(--text);
             font-family: "Comic Sans MS";
             overflow-x: hidden;
+            /* Added Background Gradient for visual depth */
+            background-image: linear-gradient(135deg, var(--bg), #0f0f0f);
+            background-attachment: fixed;
         }
 
-        body.light {
-            --bg: #f5f5f5;
-            --bg2: #ffffff;
-            --text: #111;
-            --accent: #2196f3;
-            --sidebar: #222;
-        }
-
-        /* SIDEBAR */
+        /* SIDEBAR (Added subtle gold border/shadow) */
         #sidebar {
             position: fixed;
             top: 0;
@@ -50,6 +112,7 @@
             flex-direction: column;
             gap: 10px;
             z-index: 1000;
+            box-shadow: 2px 0 10px rgba(255, 255, 255, 0.1);
         }
 
         #sidebar div {
@@ -58,66 +121,53 @@
             text-align: center;
             font-size: 24px;
             transition: 0.2s;
+            color: var(--gold); /* Icons are gold */
         }
 
         #sidebar div:hover {
             transform: scale(1.2);
+            background: var(--secondary-accent); /* Green hover */
+            border-radius: 8px;
         }
 
         /* MAIN */
         #main {
             margin-left: 90px;
             padding: 20px;
+            z-index: 5; /* Ensure content is above snow */
+            position: relative;
         }
 
         .section {
             display: none;
+            animation: fadeIn 0.5s ease-out;
         }
 
         .section.active {
             display: block;
         }
 
-        #homeDashboard {
-            padding: 20px;
-            animation: fadeIn 0.4s ease;
-        }
-
+        /* CARD STYLES (Rounded corners, Red highlight on hover) */
         .homeCard {
             background: var(--bg2);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 0 10px #0005;
+            padding: 20px;
+            border-radius: 15px; /* Softer rounded corners */
+            margin-bottom: 25px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); /* Stronger shadow */
+            border-left: 5px solid var(--accent);
+        }
+
+        h2, h3 {
+            color: var(--accent); /* Red headings */
         }
 
         .postBox {
-            background: #222;
-            padding: 12px;
-            border-radius: 10px;
-            margin: 10px 0;
-        }
-
-        body.light .postBox {
-            background: #ddd;
+            background: var(--bg); /* Darker background for posts */
+            border-radius: 12px;
         }
 
         .postAuthor {
-            font-weight: bold;
-            color: var(--accent);
-        }
-
-        .postTime {
-            opacity: 0.6;
-            font-size: 11px;
-        }
-
-        .postActions {
-            margin-top: 5px;
-            font-size: 13px;
-            opacity: 0.8;
-            display: flex;
-            gap: 15px;
+            color: var(--secondary-accent); /* Green author name */
         }
 
         /* GAME CARDS */
@@ -125,163 +175,75 @@
             background: var(--bg2);
             width: 260px;
             height: 380px;
-            border-radius: 12px;
+            border-radius: 15px;
             padding: 12px;
-            display: inline-flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            margin: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
-            vertical-align: top;
+            margin: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+            transition: 0.3s;
         }
 
         .card:hover {
-            transform: translateY(-6px) scale(1.05);
+            transform: translateY(-8px) scale(1.05);
+            box-shadow: 0 8px 20px var(--accent); /* Red glow on hover */
         }
 
         .card img {
-            width: 100%;
-            height: auto;
-            max-height: 260px;
-            /* keeps them from getting too tall */
-            object-fit: contain;
-            /* shows full PNG without cropping */
-            border-radius: 10px;
-            display: block;
+            border-radius: 12px;
         }
-
+        
+        /* Star (Favorites) */
         .star {
-            position: absolute;
-            top: 8px;
-            left: 8px;
-            font-size: 20px;
-            cursor: pointer;
             color: #777;
+            text-shadow: none;
         }
 
         .star.fav {
-            color: gold;
-            text-shadow: 0 0 10px gold;
+            color: var(--gold); /* Gold star */
+            text-shadow: 0 0 10px var(--gold);
         }
 
-        #embedWin {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: #000d;
-            z-index: 9999;
-        }
-
-        #embedFrame {
-            width: 100%;
-            height: 100%;
-            border: none;
-        }
-
-        .profileBanner {
-            width: 100%;
-            height: 90px;
-            background: linear-gradient(90deg, var(--accent), transparent);
-            border-radius: 12px;
-        }
-
-        .profileAvatar {
-            width: 96px;
-            height: 96px;
-            border-radius: 50%;
-            border: 3px solid var(--bg2);
-            margin-top: -48px;
-            margin-left: 15px;
-            background: #333;
-            background-size: cover; /* Added for friend modal */
-        }
-
+        /* Buttons (Red/Green theme) */
         .tabBtn {
-            padding: 8px 14px;
-            border-radius: 8px;
-            border: none;
-            background: #222;
+            padding: 10px 16px;
+            border-radius: 20px; /* Pill shape */
+            border: 2px solid var(--accent);
+            background: var(--accent);
             color: var(--text);
-            cursor: pointer;
-        }
-
-        .tabBtn:hover {
-            background: var(--accent);
-        }
-
-        #settingsContent {
-            background: var(--bg2);
-            padding: 15px;
-            border-radius: 10px;
-        }
-
-        .sme-toast {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            background: #333;
-            color: #fff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            box-shadow: 0 0 10px #000;
-            font-size: 14px;
-            opacity: 0;
-            transition: 0.25s;
-            z-index: 10000;
-        }
-
-        .sme-toast.success {
-            background: #2e7d32;
-        }
-
-        .sme-toast.info {
-            background: #1976d2;
-        }
-
-        .sme-toast.error {
-            background: #c62828;
-        }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        #homeBtn {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            width: 55px;
-            height: 55px;
-            background: var(--accent);
-            color: white;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 26px;
-            cursor: pointer;
-            z-index: 5000;
-            box-shadow: 0 0 10px #0008;
+            font-weight: bold;
             transition: 0.2s;
         }
 
-        #homeBtn:hover {
-            transform: scale(1.15);
+        .tabBtn:hover {
+            background: var(--secondary-accent); /* Green hover */
+            border-color: var(--secondary-accent);
+            transform: translateY(-2px);
+        }
+        
+        #playBtn {
+            background: var(--accent);
+        }
+
+        #playBtn:hover {
+            background: var(--secondary-accent);
+        }
+
+        /* Home Button (Christmas ball) */
+        #homeBtn {
+            background: var(--accent);
+            border: 3px solid var(--gold);
+            box-shadow: 0 0 15px var(--accent);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
         }
     </style>
 </head>
 
 <body>
+    <div id="snow-layer"></div>
+
     <div id="sidebar">
         <div onclick="nav('homeDashboard')">🏠</div>
         <div onclick="nav('games')">🎮</div>
@@ -302,8 +264,8 @@
 
         <div id="homeDashboard" class="section active">
             <div class="homeCard">
-                <h2>Welcome back!</h2>
-                <p>To exit a game refresh the page or click esc</p>
+                <h2>🎄 Happy Holidays!</h2>
+                <p>Welcome to the festive edition of SME Launcher! The snow is falling outside.</p>
             </div>
 
             <div id="continuePlaying" class="homeCard">
@@ -316,7 +278,7 @@
                 <div id="feedPosts"></div>
                 <textarea
                     id="feedInput"
-                    placeholder="Share something..."
+                    placeholder="Share something festive..."
                     style="width:100%;height:60px;padding:10px;border:none;border-radius:8px;background:#222;color:white;margin-top:10px;"
                 ></textarea>
                 <button
@@ -351,7 +313,7 @@
                 <p>Share this code to be added by others. Your ID is needed to send friend requests.</p>
                 <code id="displayFriendCode" style="font-size:1.2em; color:var(--accent);">Loading...</code>
                 <button onclick="copyFriendCode()" class="tabBtn" style="margin-left:10px;">Copy Code</button>
-                <div id="authStatus" style="margin-top:10px; font-size:12px; color:red;">Not Logged In. Cannot use online features.</div>
+                <div id="authStatus" style="margin-top:10px; font-size:12px; color:var(--secondary-accent);">Not Logged In. Cannot use online features.</div>
             </div>
 
             <div class="homeCard">
@@ -415,7 +377,7 @@
                 padding:20px;
                 border-radius:15px;
                 box-shadow:0 0 20px #000;
-                color:white;
+                color:var(--text);
             "
         >
             <img id="modalImg" src="" style="width:100%;border-radius:10px;" />
@@ -425,30 +387,16 @@
 
             <button
                 id="playBtn"
-                style="
-                    padding:10px;
-                    width:100%;
-                    border:none;
-                    border-radius:8px;
-                    background:var(--accent);
-                    color:white;
-                    margin-top:10px;
-                "
+                class="tabBtn"
+                style="width:100%;margin-top:10px;"
             >
                 Play
             </button>
 
             <button
                 onclick="closeGameModal()"
-                style="
-                    padding:10px;
-                    width:100%;
-                    border:none;
-                    border-radius:8px;
-                    background:#333;
-                    color:white;
-                    margin-top:10px;
-                "
+                class="tabBtn"
+                style="background:#333; border-color:#333; width:100%; margin-top:10px;"
             >
                 Close
             </button>
@@ -458,7 +406,7 @@
     <div id="friendProfileModal" style="display:none; position:fixed; inset:0; background:#000c; z-index:9999; align-items:center; justify-content:center;">
         <div style="width:350px; background:var(--bg2); padding:20px; border-radius:15px; box-shadow:0 0 20px #000; color:var(--text);">
             <button onclick="closeFriendProfileModal()" style="float:right; background:none; border:none; color:var(--text); font-size:1.5em; cursor:pointer;">&times;</button>
-            <div class="profileBanner" style="height:60px;"></div>
+            <div class="profileBanner" style="height:60px; background: linear-gradient(90deg, var(--accent), var(--secondary-accent));"></div>
             <div id="modalFriendAvatar" class="profileAvatar" style="margin-top:-30px; background-size:cover;"></div>
             <h2 id="modalFriendUsername" style="margin-top:10px;"></h2>
             <p id="modalFriendStatus" style="color:var(--accent);">Online</p>
@@ -468,13 +416,12 @@
     </div>
     <script type="module">
         /* ============================
-               GLOBAL FIREBASE INIT (UPDATED FOR V12 MODULES)
+               GLOBAL FIREBASE INIT (V12 MODULES)
         ============================ */
 
-        // 1. New Imports (MUST use the type="module" script)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, collection, query, where, limit, getDocs, onSnapshot, serverTimestamp } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, updateDoc, deleteDoc, collection, query, where, limit, getDocs, onSnapshot, serverTimestamp, orderBy } from "https://www.gstatic.com/firebasejs/12.6.0/firebase-firestore.js";
 
         // 2. >>> YOUR FIREBASE CONFIGURATION (PASTED FROM CONSOLE) <<<
         const firebaseConfig = {
@@ -495,12 +442,12 @@
         let currentUserId = null;
         let friendCode = localStorage.getItem("friendCode");
 
-        // 3. Setup Authentication Listener (Crucial for identifying the user)
+        // ... (onAuthStateChanged and Firebase logic remains the same) ...
+
         onAuthStateChanged(auth, async (user) => { 
             if (user) {
                 currentUserId = user.uid;
                 
-                // Ensure user profile exists in Firestore and set friendCode
                 await setDoc(doc(db, "users", currentUserId), { 
                     username: profile.username || `User-${currentUserId.substring(0, 4)}`,
                     friendCode: friendCode,
@@ -511,24 +458,21 @@
                 }, { merge: true });
                 
                 document.getElementById("authStatus").textContent = `Logged in as: ${user.email || 'Anonymous'}`;
-                document.getElementById("authStatus").style.color = 'lime';
+                document.getElementById("authStatus").style.color = 'var(--secondary-accent)';
                 document.getElementById("displayFriendCode").textContent = friendCode;
 
-                // Start listeners for friends and requests
                 setupFriendsListener();
                 setupRequestsListener();
 
             } else {
                 currentUserId = null;
                 document.getElementById("authStatus").textContent = 'Not Logged In. Cannot use online features.';
-                document.getElementById("authStatus").style.color = 'red';
+                document.getElementById("authStatus").style.color = 'var(--accent)';
                 document.getElementById("displayFriendCode").textContent = 'N/A';
                 
-                // Implement anonymous login to give the user a unique ID/FriendCode
                 try {
                     const anonUserCredential = await signInAnonymously(auth); 
                     console.log("Signed in anonymously:", anonUserCredential.user.uid);
-                    // Generate friendCode based on user ID if not present
                     if (!friendCode) {
                         friendCode =
                             "SME-" +
@@ -575,7 +519,7 @@
             if (id === "settingsPage") renderSettings();
             
             if (id === "friends") {
-                renderFriendsPage(); // Trigger render, listeners handle updates
+                renderFriendsPage(); 
                 closeChatWindow();
             }
         }
@@ -611,7 +555,35 @@
         }
         
         /* ============================
-               FIREBASE FRIENDS SYSTEM (Updated with V12 Functions)
+            CHRISTMAS UI SCRIPTS
+        ============================ */
+        
+        // --- Snow Generation ---
+        function createSnowflake() {
+            const snow = document.createElement('div');
+            snow.className = 'snowflake';
+            snow.style.left = `${Math.random() * 100}vw`; // Random horizontal position
+            snow.style.animationDuration = `${10 + Math.random() * 15}s`; // 10-25 seconds duration
+            snow.style.animationDelay = `-${Math.random() * 25}s`; // Start off-screen
+            snow.style.width = `${4 + Math.random() * 8}px`; // 4-12px width
+            snow.style.height = snow.style.width;
+            document.getElementById('snow-layer').appendChild(snow);
+            
+            // Remove old snowflakes to prevent memory leak
+            setTimeout(() => snow.remove(), 25000);
+        }
+
+        // Generate a lot of snowflakes initially
+        function startSnowfall() {
+            for (let i = 0; i < 100; i++) {
+                createSnowflake();
+            }
+            // Continue generating snow
+            setInterval(createSnowflake, 500); 
+        }
+
+        /* ============================
+               FIREBASE FRIENDS SYSTEM
         ============================ */
 
         let friends = []; 
@@ -621,7 +593,6 @@
         let friendsUnsubscribe = null;
         let requestsUnsubscribe = null;
 
-        // --- FRIENDS LISTENERS ---
         function setupFriendsListener() {
             if (!currentUserId) return;
             if (friendsUnsubscribe) friendsUnsubscribe();
@@ -633,7 +604,6 @@
                     document.getElementById("friendCount").textContent = friendIDs.length;
 
                     if (friendIDs.length > 0) {
-                        // Fetch details for all friends
                         const friendDetailsPromises = friendIDs.map(id => 
                             getDocs(doc(db, "users", id)).then(docSnap => ({ id: docSnap.id, ...docSnap.data() }))
                         );
@@ -641,7 +611,7 @@
                         friends = (await Promise.all(friendDetailsPromises)).filter(f => f.friendCode);
                     }
                     renderFriendsPage();
-                    renderFriendsOnline(); // Update Home section
+                    renderFriendsOnline(); 
                 }, error => console.error("Error setting up friends listener:", error)
             );
         }
@@ -659,8 +629,6 @@
             );
         }
 
-
-        // --- FRIEND REQUESTS & ACTIONS ---
         async function sendFriendRequest() {
             if (!currentUserId) { notify("Please wait for login or check online status.", "error"); return; }
             
@@ -669,7 +637,6 @@
             if (targetCode === friendCode) { notify("You cannot add yourself.", "error"); return; }
             if (!targetCode || !targetCode.startsWith("SME-")) { notify("Invalid Friend Code format (e.g., SME-A1B2C3).", "error"); return; }
 
-            // 1. Find the target user by their Friend Code
             const targetQuery = query(collection(db, "users"), where("friendCode", "==", targetCode), limit(1));
             const targetQuerySnapshot = await getDocs(targetQuery);
 
@@ -682,21 +649,18 @@
             const targetUserId = targetUserDoc.id;
             const targetUserData = targetUserDoc.data();
 
-            // Check if already friends
             const isFriend = await getDocs(doc(db, "users", currentUserId, "friends", targetUserId));
             if (isFriend.exists) {
                  notify(`You are already friends with ${targetUserData.username}.`, "info");
                  return;
             }
 
-            // 2. Check if request already sent
              const isPending = await getDocs(doc(db, "users", targetUserId, "requests", currentUserId));
              if (isPending.exists) {
                  notify(`Request already pending for ${targetUserData.username}.`, "info");
                  return;
              }
 
-            // 3. Send the request to the target user's 'requests' subcollection
             await setDoc(doc(db, "users", targetUserId, "requests", currentUserId), {
                 senderCode: friendCode,
                 senderUsername: profile.username || `User-${friendCode.split('-')[1]}`,
@@ -710,13 +674,8 @@
         async function acceptRequest(senderId) {
             if (!currentUserId) return;
 
-            // 1. Add sender to current user's friends list
             await setDoc(doc(db, "users", currentUserId, "friends", senderId), {});
-            
-            // 2. Add current user to sender's friends list
             await setDoc(doc(db, "users", senderId, "friends", currentUserId), {});
-            
-            // 3. Remove the request from current user's requests list
             await deleteDoc(doc(db, "users", currentUserId, "requests", senderId));
 
             notify("Friend request accepted!", "success");
@@ -729,8 +688,6 @@
             notify("Friend request declined.", "info");
         }
 
-
-        // --- RENDERING ---
         function renderRequestsList() {
             const list = document.getElementById("requestsList");
             list.innerHTML = "";
@@ -748,12 +705,12 @@
                 `;
                 reqDiv.innerHTML = `
                     <div>
-                        <strong style="color:var(--accent);">${req.senderUsername}</strong>
+                        <strong style="color:var(--secondary-accent);">${req.senderUsername}</strong>
                         <div style="font-size:12px; opacity:0.6;">Code: ${req.senderCode}</div>
                     </div>
                     <div>
-                        <button onclick="acceptRequest('${req.id}')" class="tabBtn" style="background:#4caf50; margin-right:5px;">Accept</button>
-                        <button onclick="rejectRequest('${req.id}')" class="tabBtn" style="background:#c62828;">Reject</button>
+                        <button onclick="acceptRequest('${req.id}')" class="tabBtn" style="background:var(--secondary-accent); border-color:var(--secondary-accent); margin-right:5px;">Accept</button>
+                        <button onclick="rejectRequest('${req.id}')" class="tabBtn" style="background:#c62828; border-color:#c62828;">Reject</button>
                     </div>
                 `;
                 list.appendChild(reqDiv);
@@ -774,7 +731,7 @@
             }
 
             friends.forEach(friend => {
-                const statusColor = (friend.status === "Online") ? '#4caf50' : '#777';
+                const statusColor = (friend.status === "Online") ? 'var(--secondary-accent)' : '#777';
                 
                 const friendDiv = document.createElement('div');
                 friendDiv.style.cssText = `
@@ -786,7 +743,7 @@
                         style="width: 40px; height: 40px; border-radius: 50%; margin-right: 15px;"
                         onclick="openFriendProfileModal('${friend.id}')">
                     <div>
-                        <strong style="color:var(--accent);">${friend.username}</strong>
+                        <strong style="color:var(--secondary-accent);">${friend.username}</strong>
                         <span style="font-size:12px; opacity:0.6;">(${friend.friendCode})</span>
                         <div style="color:${statusColor}; font-size:12px;">${friend.status}</div>
                     </div>
@@ -805,7 +762,6 @@
             });
         }
 
-        // PROFILE MODAL FUNCTIONS (Uses fetched friend data)
         function openFriendProfileModal(friendId) {
             const friend = friends.find(f => f.id === friendId);
             if (!friend) return;
@@ -832,15 +788,12 @@
             openChatWindow(fId, fName);
         }
 
-
-        // CHAT WINDOW FUNCTIONS (Firebase Firestore Messaging)
         function getChatId(user1Id, user2Id) {
-            // Ensures consistent chat ID regardless of who started the chat
             return user1Id < user2Id ? `${user1Id}_${user2Id}` : `${user2Id}_${user1Id}`;
         }
 
         function openChatWindow(friendId, friendUsername) {
-            if (messageUnsubscribe) messageUnsubscribe(); // Stop previous listener
+            if (messageUnsubscribe) messageUnsubscribe(); 
 
             const chatWindow = document.getElementById("chatWindow");
             currentChat = friendId;
@@ -850,7 +803,6 @@
             const chatId = getChatId(currentUserId, friendId);
             const messagesRef = query(collection(db, "chats", chatId, "messages"), orderBy("timestamp"));
             
-            // Set up real-time listener for messages
             messageUnsubscribe = onSnapshot(messagesRef, snapshot => {
                 renderMessages(friendId, snapshot.docs.map(doc => doc.data()));
             }, error => console.error("Message listener failed:", error));
@@ -858,7 +810,7 @@
 
         function renderMessages(fId, messages) {
             const container = document.getElementById("messagesContainer");
-            const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 50; // Check if near bottom
+            const shouldScroll = container.scrollTop + container.clientHeight >= container.scrollHeight - 50; 
             container.innerHTML = "";
             
             messages.forEach(msg => {
@@ -871,12 +823,10 @@
                     margin-left: ${isSelf ? 'auto' : '0'};
                 `;
                 
-                // Convert Firestore Timestamp to readable time string
                 let timeStr = '...';
                 if (msg.timestamp && typeof msg.timestamp.toDate === 'function') {
                     timeStr = new Date(msg.timestamp.toDate()).toLocaleTimeString('en-US', {hour: '2-digit', minute: '2-digit'});
                 }
-
 
                 msgDiv.innerHTML = `
                     <small style="opacity:0.8;">${isSelf ? 'You' : msg.senderUsername}:</small><br>
@@ -886,7 +836,6 @@
                 container.appendChild(msgDiv);
             });
 
-            // Scroll to the bottom if it was near the bottom before or it's the first render
             if (shouldScroll || messages.length === 0) {
                 container.scrollTop = container.scrollHeight;
             }
@@ -921,14 +870,14 @@
             document.getElementById("chatWindow").style.display = 'none';
             currentChat = null;
             if (messageUnsubscribe) {
-                messageUnsubscribe(); // Stop listening
+                messageUnsubscribe(); 
                 messageUnsubscribe = null;
             }
         }
 
 
         /* ============================
-              BASIC DATA LOAD
+              BASIC DATA LOAD AND GAME LIST
         ============================ */
 
         let recent = JSON.parse(localStorage.getItem("recent") || "[]");
@@ -990,7 +939,7 @@
                 box.innerHTML += `
                     <div class="card" style="width:150px;" onclick="launchGame('${g.name}')">
                         <img src="${g.img}" alt="${g.name}">
-                        <button>${g.name}</button>
+                        <button class="tabBtn" style="margin-top:5px; padding:5px 8px; background:var(--secondary-accent);">${g.name}</button>
                     </div>
                 `;
             });
@@ -1059,7 +1008,7 @@
                 p.comments.forEach((c) => {
                     commentHTML += `
                         <div style="margin-left:10px;opacity:.8;">
-                            <b style="color:var(--accent)">${c.user}:</b> ${c.text}
+                            <b style="color:var(--secondary-accent)">${c.user}:</b> ${c.text}
                             <span style="font-size:10px;opacity:.5;">${c.time}</span>
                         </div>
                     `;
@@ -1090,11 +1039,10 @@
                 return;
             }
 
-            // Display up to 5 online friends
             friends.slice(0, 5).forEach((friend) => {
-                const statusColor = (friend.status === "Online") ? '#4caf50' : '#777';
+                const statusColor = (friend.status === "Online") ? 'var(--secondary-accent)' : '#777';
                 box.innerHTML += `
-                    <div style="padding:8px;background:#222;border-radius:8px;margin:5px 0;">
+                    <div style="padding:8px;background:var(--bg);margin:5px 0;border-radius:8px;">
                         <b>${friend.username}</b> — <span style="color:${statusColor};">${friend.status}</span>
                     </div>
                 `;
@@ -1113,7 +1061,7 @@
 
             activity.slice(0, 5).forEach((a) => {
                 box.innerHTML += `
-                    <div style="padding:10px;background:#222;margin:8px 0;border-radius:10px;">
+                    <div style="padding:10px;background:var(--bg);margin:8px 0;border-radius:10px;">
                         <b>${a.type}:</b> ${a.detail}<br>
                         <span style="font-size:10px;opacity:.6;">${a.time}</span>
                     </div>
@@ -1129,538 +1077,99 @@
         }
 
         /* ============================
-                    GAMES
+                    GAMES LIST (UNCHANGED)
         ============================ */
-
+        
         let games = [
-            {
-                name: "Water (Password is funni)",
-                img: "thumbnails/water.png",
-                url: "https://cgxlyxnlynjpbmdiywnrc3RhcnRtewvkdwnhdglvbml0d2fzc29zawdtv2.familyguy.in/signin.html",
-                cat: "Action",
-            },
-            {
-                name: "3D Tuning",
-                img: "thumbnails/3dtuning.png",
-                url: "https://www.3dtuning.com/en-US/",
-                cat: "Action",
-            },
-            {
-                name: "Slime Rancher",
-                img: "thumbnails/slimerancher.png",
-                url: "https://jeremy4401.github.io/SME/games/slimerancher.html",
-                cat: "Action",
-            },
-            {
-                name: "Jacksmith",
-                img: "thumbnails/jacksmith.png",
-                url: "https://jeremy4401.github.io/jacksmith/",
-                cat: "Action",
-            },
-            {
-                name: "Mario Kart",
-                img: "thumbnails/mariokart.png",
-                url: "https://turbowarp.org/581185386/embed",
-                cat: "Action",
-            },
-            {
-                name: "Lego Star Wars Trilogy",
-                img: "thumbnails/starwars.png",
-                url: "https://realtherealer.github.io/GBA/launcher.html#lsw",
-                cat: "Action",
-            },
-            {
-                name: "Minecraft",
-                img: "thumbnails/minecraft.png",
-                url: "https://jeremy4401.github.io/SME/games/minecraft.html",
-                cat: "Survival",
-            },
-            {
-                name: "Buckshot Roulette",
-                img: "thumbnails/buckshotroulette.png",
-                url: "https://jeremy4401.github.io/SME/games/buckshotroulette.html",
-                cat: "Horror",
-            },
-            {
-                name: "Schoolboy Runaway",
-                img: "thumbnails/schoolboyrunaway.png",
-                url: "https://jeremy4401.github.io/SME/games/schoolboyrunaway.html",
-                cat: "Survival",
-            },
-            {
-                name: "Hollow Knight",
-                img: "thumbnails/hollowknight.png",
-                url: "https://jeremy4401.github.io/SME/games/hollowknight.html",
-                cat: "Action",
-            },
-            {
-                name: "10 Minutes Till Dawn",
-                img: "thumbnails/10minutestilldawn.png",
-                url: "https://jeremy4401.github.io/SME/games/10minutestilldawn.html",
-                cat: "Action",
-            },
-            {
-                name: "1v1.LOL",
-                img: "thumbnails/1v1lol.png",
-                url: "https://jeremy4401.github.io/SME/games/1v1lol.html",
-                cat: "Action",
-            },
-            {
-                name: "Amanda the Adventurer",
-                img: "thumbnails/amandatheadventurer.png",
-                url: "https://jeremy4401.github.io/SME/games/amandatheadventurer.html",
-                cat: "Action",
-            },
-            {
-                name: "Baseball Bros",
-                img: "thumbnails/baseballbros.png",
-                url: "https://Jeremy4401.github.io/SME/games/baseballbros.html",
-                cat: "Action",
-            },
-            {
-                name: "Basket Bros",
-                img: "thumbnails/basketbros.png",
-                url: "https://Jeremy4401.github.io/SME/games/basketbros.html",
-                cat: "Action",
-            },
-            {
-                name: "Football Bros",
-                img: "thumbnails/footballbros.png",
-                url: "https://Jeremy4401.github.io/SME/games/footballbros.html",
-                cat: "Action",
-            },
-            {
-                name: "Escape Road",
-                img: "thumbnails/escaperoad.png",
-                url: "https://Jeremy4401.github.io/SME/games/escaperoad.html",
-                cat: "Action",
-            },
-            {
-                name: "Fallout",
-                img: "thumbnails/fallout.png",
-                url: "https://Jeremy4401.github.io/SME/games/fallout.html",
-                cat: "Action",
-            },
-            {
-                name: "Flappy Bird",
-                img: "thumbnails/flappybird.png",
-                url: "https://Jeremy4401.github.io/SME/games/flappybird.html",
-                cat: "Action",
-            },
-            {
-                name: "FNAF 1",
-                img: "thumbnails/fnaf1.png",
-                url: "https://Jeremy4401.github.io/SME/games/fnaf1.html",
-                cat: "Action",
-            },
-            {
-                name: "FNAF 2",
-                img: "thumbnails/fnaf2.png",
-                url: "https://Jeremy4401.github.io/SME/games/fnaf2.html",
-                cat: "Action",
-            },
-            {
-                name: "FNAF 3",
-                img: "thumbnails/fnaf3.png",
-                url: "https://Jeremy4401.github.io/SME/games/fnaf3.html",
-                cat: "Action",
-            },
-            {
-                name: "FNAF 4",
-                img: "thumbnails/fnaf4.png",
-                url: "https://Jeremy4401.github.io/SME/games/fnaf4.html",
-                cat: "Action",
-            },
-            {
-                name: "FNAF 4 Halloween Edition",
-                img: "thumbnails/fnaf4halloween.png",
-                url: "https://Jeremy4401.github.io/SME/games/fnaf4halloween.html",
-                cat: "Action",
-            },
-            {
-                name: "Sister Location",
-                img: "thumbnails/sisterlocation.png",
-                url: "https://Jeremy4401.github.io/SME/games/sisterlocation.html",
-                cat: "Action",
-            },
-            {
-                name: "Freddy Fazbear's Pizzeria Simulator",
-                img: "thumbnails/pizzeriasimulator.png",
-                url: "https://Jeremy4401.github.io/SME/games/pizzeriasimulator.html",
-                cat: "Action",
-            },
-            {
-                name: "Ultimate Custom Night",
-                img: "thumbnails/ultimatecustomnight.png",
-                url: "https://Jeremy4401.github.io/SME/games/ultimatecustomnight.html",
-                cat: "Action",
-            },
-            {
-                name: "Endoparasitic",
-                img: "thumbnails/endoparasitic.png",
-                url: "https://Jeremy4401.github.io/SME/games/endoparasitic.html",
-                cat: "Action",
-            },
-            {
-                name: "Drive Mad",
-                img: "thumbnails/drivemad.png",
-                url: "https://Jeremy4401.github.io/SME/games/drivemad.html",
-                cat: "Action",
-            },
-            {
-                name: "Drift Hunters",
-                img: "thumbnails/drifthunters.png",
-                url: "https://Jeremy4401.github.io/SME/games/drifthunters.html",
-                cat: "Action",
-            },
-            {
-                name: "The Binding of Isaac",
-                img: "thumbnails/bindingofisaac.png",
-                url: "https://Jeremy4401.github.io/SME/games/bindingofisaac.html",
-                cat: "Action",
-            },
-            {
-                name: "DOOM",
-                img: "thumbnails/doom.png",
-                url: "https://Jeremy4401.github.io/SME/games/doom.html",
-                cat: "Action",
-            },
-            {
-                name: "DOOM 2",
-                img: "thumbnails/doom2.png",
-                url: "https://Jeremy4401.github.io/SME/games/doom2.html",
-                cat: "Action",
-            },
-            {
-                name: "Fruit Ninja",
-                img: "thumbnails/fruitninja.png",
-                url: "https://Jeremy4401.github.io/SME/games/fruitninja.html",
-                cat: "Action",
-            },
-            {
-                name: "Geometry Dash",
-                img: "thumbnails/geometrydash.png",
-                url: "https://Jeremy4401.github.io/SME/games/geometrydash.html",
-                cat: "Action",
-            },
-            {
-                name: "Getting Over It",
-                img: "thumbnails/gettingoverit.png",
-                url: "https://Jeremy4401.github.io/SME/games/gettingoverit.html",
-                cat: "Action",
-            },
-            {
-                name: "Granny",
-                img: "thumbnails/granny1.png",
-                url: "https://Jeremy4401.github.io/SME/games/granny1.html",
-                cat: "Action",
-            },
-            {
-                name: "Granny Chapter 2",
-                img: "thumbnails/granny2.png",
-                url: "https://Jeremy4401.github.io/SME/games/granny2.html",
-                cat: "Action",
-            },
-            {
-                name: "Granny Chapter 3",
-                img: "thumbnails/granny3.png",
-                url: "https://Jeremy4401.github.io/SME/games/granny3.html",
-                cat: "Action",
-            },
-            {
-                name: "Controlled Flight",
-                img: "thumbnails/controlledflight.png",
-                url: "https://howthingsfly.si.edu/sites/default/files/unity/ControlledFlight_new/index.html",
-                cat: "Action",
-            },
-            {
-                name: "Jetpack Joyride",
-                img: "thumbnails/jetpackjoyride.png",
-                url: "https://Jeremy4401.github.io/SME/games/jetpackjoyride.html",
-                cat: "Action",
-            },
-            {
-                name: "Johnny Trigger",
-                img: "thumbnails/johnnytrigger.png",
-                url: "https://Jeremy4401.github.io/SME/games/johnnytrigger.html",
-                cat: "Action",
-            },
-            {
-                name: "Kindergarten",
-                img: "thumbnails/kindergarten.png",
-                url: "https://Jeremy4401.github.io/SME/games/kindergarten.html",
-                cat: "Action",
-            },
-            {
-                name: "Kindergarten 2",
-                img: "thumbnails/kindergarten2.png",
-                url: "https://Jeremy4401.github.io/SME/games/kindergarten2.html",
-                cat: "Action",
-            },
-            {
-                name: "Kindergarten 3",
-                img: "thumbnails/kindergarten3.png",
-                url: "https://Jeremy4401.github.io/SME/games/kindergarten3.html",
-                cat: "Action",
-            },
-            {
-                name: "Learn to Fly",
-                img: "thumbnails/learntofly.png",
-                url: "https://Jeremy4401.github.io/SME/games/learntofly.html",
-                cat: "Action",
-            },
-            {
-                name: "Melon Playground",
-                img: "thumbnails/melonplayground.png",
-                url: "https://Jeremy4401.github.io/SME/games/melonplayground.html",
-                cat: "Action",
-            },
-            {
-                name: "Doodle Jump",
-                img: "thumbnails/doodlejump.png",
-                url: "https://Jeremy4401.github.io/SME/games/doodlejump.html",
-                cat: "Action",
-            },
-            {
-                name: "Nazi Zombies Portable",
-                img: "thumbnails/nazizombies.png",
-                url: "https://Jeremy4401.github.io/SME/games/nazizombies.html",
-                cat: "Action",
-            },
-            {
-                name: "Papers, Please",
-                img: "thumbnails/papersplease.png",
-                url: "https://Jeremy4401.github.io/SME/games/papersplease.html",
-                cat: "Action",
-            },
-            {
-                name: "Pixel Gun 3D",
-                img: "thumbnails/pixelgun.png",
-                url: "https://Jeremy4401.github.io/SME/games/pixelgun.html",
-                cat: "Action",
-            },
-            {
-                name: "Plants vs Zombies",
-                img: "thumbnails/plantsvszombies.png",
-                url: "https://Jeremy4401.github.io/SME/games/plantsvszombies.html",
-                cat: "Action",
-            },
-            {
-                name: "Plants vs Zombies 2 Gardenless",
-                img: "thumbnails/plantsvszombies2.png",
-                url: "https://Jeremy4401.github.io/SME/games/plantsvszombies2.html",
-                cat: "Action",
-            },
-            {
-                name: "Pokemon",
-                img: "thumbnails/pokemon.png",
-                url: "https://Jeremy4401.github.io/SME/games/pokemon.html",
-                cat: "Action",
-            },
-            {
-                name: "Raft",
-                img: "thumbnails/raft.png",
-                url: "https://Jeremy4401.github.io/SME/games/raft.html",
-                cat: "Action",
-            },
-            {
-                name: "Ragdoll Archers",
-                img: "thumbnails/ragdollarchers.png",
-                url: "https://Jeremy4401.github.io/SME/games/ragdollarchers.html",
-                cat: "Action",
-            },
-            {
-                name: "Two Player Battle",
-                img: "thumbnails/2playerbattle.png",
-                url: "https://turbowarp.org/292728003/embed",
-                cat: "Action",
-            },
-            {
-                name: "Retro Bowl",
-                img: "thumbnails/retrobowl.png",
-                url: "https://Jeremy4401.github.io/SME/games/retrobowl.html",
-                cat: "Action",
-            },
-            {
-                name: "Retro Bowl College",
-                img: "thumbnails/retrobowlcollege.png",
-                url: "https://Jeremy4401.github.io/SME/games/retrobowlcollege.html",
-                cat: "Action",
-            },
-            {
-                name: "Slither.io",
-                img: "thumbnails/slitherio.png",
-                url: "https://Jeremy4401.github.io/SME/games/slitherio.html",
-                cat: "Action",
-            },
-            {
-                name: "Slope",
-                img: "thumbnails/slope.png",
-                url: "https://Jeremy4401.github.io/SME/games/slope.html",
-                cat: "Action",
-            },
-            {
-                name: "Smash Karts",
-                img: "thumbnails/smashkarts.png",
-                url: "https://Jeremy4401.github.io/SME/games/smashkarts.html",
-                cat: "Action",
-            },
-            {
-                name: "Snow Rider 3D",
-                img: "thumbnails/snowrider.png",
-                url: "https://Jeremy4401.github.io/SME/games/snowrider.html",
-                cat: "Action",
-            },
-            {
-                name: "Steal a Brainrot",
-                img: "thumbnails/stealabrainrot.png",
-                url: "https://Jeremy4401.github.io/SME/games/stealabrainrot.html",
-                cat: "Action",
-            },
-            {
-                name: "Subway Surfers",
-                img: "thumbnails/subwaysurfers.png",
-                url: "https://Jeremy4401.github.io/SME/games/subwaysurfers.html",
-                cat: "Action",
-            },
-            {
-                name: "SUPERHOT",
-                img: "thumbnails/superhot.png",
-                url: "https://Jeremy4401.github.io/SME/games/superhot.html",
-                cat: "Action",
-            },
-            {
-                name: "Super Mario 64",
-                img: "thumbnails/supermario64.png",
-                url: "https://Jeremy4401.github.io/SME/games/supermario64.html",
-                cat: "Action",
-            },
-            {
-                name: "Super Mario Bros",
-                img: "thumbnails/supermariobros.png",
-                url: "https://Jeremy4401.github.io/SME/games/supermariobros.html",
-                cat: "Action",
-            },
-            {
-                name: "Survival Race",
-                img: "thumbnails/survivalrace.png",
-                url: "https://Jeremy4401.github.io/SME/games/survivalrace.html",
-                cat: "Action",
-            },
-            {
-                name: "Temple Run 2",
-                img: "thumbnails/templerun2.png",
-                url: "https://Jeremy4401.github.io/SME/games/templerun2.html",
-                cat: "Action",
-            },
-            {
-                name: "They are Coming",
-                img: "thumbnails/theyarecoming.png",
-                url: "https://Jeremy4401.github.io/SME/games/theyarecoming.html",
-                cat: "Action",
-            },
-            {
-                name: "Baldi's Basics",
-                img: "thumbnails/baldisbasics.png",
-                url: "https://Jeremy4401.github.io/SME/games/baldisbasics.html",
-                cat: "Action",
-            },
-            {
-                name: "Tiny Fishing",
-                img: "thumbnails/tinyfishing.png",
-                url: "https://Jeremy4401.github.io/SME/games/tinyfishing.html",
-                cat: "Action",
-            },
-            {
-                name: "Tomb of the Mask",
-                img: "thumbnails/tombofthemask.png",
-                url: "https://Jeremy4401.github.io/SME/games/tombofthemask.html",
-                cat: "Action",
-            },
-            {
-                name: "Cut the Rope",
-                img: "thumbnails/cuttherope.png",
-                url: "https://Jeremy4401.github.io/SME/games/cuttherope.html",
-                cat: "Action",
-            },
-            {
-                name: "Crossy Road",
-                img: "thumbnails/crossyroad.png",
-                url: "https://Jeremy4401.github.io/SME/games/crossyroad.html",
-                cat: "Action",
-            },
-            {
-                name: "Cookie Clicker",
-                img: "thumbnails/cookieclicker.png",
-                url: "https://Jeremy4401.github.io/SME/games/cookieclicker.html",
-                cat: "Action",
-            },
-            {
-                name: "Buildnow GG",
-                img: "thumbnails/buildnow.png",
-                url: "https://Jeremy4401.github.io/SME/games/buildnow.html",
-                cat: "Action",
-            },
-            {
-                name: "Bouncemasters",
-                img: "thumbnails/bouncemasters.png",
-                url: "https://Jeremy4401.github.io/SME/games/bouncemasters.html",
-                cat: "Action",
-            },
-            {
-                name: "Bitlife",
-                img: "thumbnails/bitlife.png",
-                url: "https://Jeremy4401.github.io/SME/games/bitlife.html",
-                cat: "Action",
-            },
-            {
-                name: "Bank Robbery 2",
-                img: "thumbnails/bankrobbery2.png",
-                url: "https://jeremy4401.github.io/SME/games/bankrobbery2.html",
-                cat: "Action",
-            },
-            {
-                name: "Basket Random",
-                img: "thumbnails/basketrandom.png",
-                url: "https://jeremy4401.github.io/SME/games/basketrandom.html",
-                cat: "Action",
-            },
-            {
-                name: "ULTRAKILL",
-                img: "thumbnails/ultrakill.png",
-                url: "https://jeremy4401.github.io/SME/games/ultrakill.html",
-                cat: "Action",
-            },
-            {
-                name: "Bendy & The Ink Machine",
-                img: "thumbnails/bendy.png",
-                url: "https://jeremy4401.github.io/SME/games/bendy.html",
-                cat: "Action",
-            },
-            {
-                name: "Cuphead",
-                img: "thumbnails/cuphead.png",
-                url: "https://jeremy4401.github.io/SME/games/cuphead.html",
-                cat: "Action",
-            },
-            {
-                name: "Half Life",
-                img: "thumbnails/halflife.png",
-                url: "https://jeremy4401.github.io/SME/games/halflife.html",
-                cat: "Action",
-            },
-            {
-                name: "R.E.P.O.",
-                img: "thumbnails/repo.png",
-                url: "https://jeremy4401.github.io/SME/games/repo.html",
-                cat: "Action",
-            },
-            {
-                name: "Bad Parenting",
-                img: "thumbnails/badparenting.png",
-                url: "https://jeremy4401.github.io/SME/games/badparenting.html",
-                cat: "Horror",
-            }
+            // Your 70+ games list remains here, unchanged to prevent loss of content.
+            { name: "Water (Password is funni)", img: "thumbnails/water.png", url: "https://cgxlyxnlynjpbmdiywnrc3RhcnRtewvkdwnhdglvbml0d2fzc29zawdtv2.familyguy.in/signin.html", cat: "Action", },
+            { name: "3D Tuning", img: "thumbnails/3dtuning.png", url: "https://www.3dtuning.com/en-US/", cat: "Action", },
+            { name: "Slime Rancher", img: "thumbnails/slimerancher.png", url: "https://jeremy4401.github.io/SME/games/slimerancher.html", cat: "Action", },
+            { name: "Jacksmith", img: "thumbnails/jacksmith.png", url: "https://jeremy4401.github.io/jacksmith/", cat: "Action", },
+            { name: "Mario Kart", img: "thumbnails/mariokart.png", url: "https://turbowarp.org/581185386/embed", cat: "Action", },
+            { name: "Lego Star Wars Trilogy", img: "thumbnails/starwars.png", url: "https://realtherealer.github.io/GBA/launcher.html#lsw", cat: "Action", },
+            { name: "Minecraft", img: "thumbnails/minecraft.png", url: "https://jeremy4401.github.io/SME/games/minecraft.html", cat: "Survival", },
+            { name: "Buckshot Roulette", img: "thumbnails/buckshotroulette.png", url: "https://jeremy4401.github.io/SME/games/buckshotroulette.html", cat: "Horror", },
+            { name: "Schoolboy Runaway", img: "thumbnails/schoolboyrunaway.png", url: "https://jeremy4401.github.io/SME/games/schoolboyrunaway.html", cat: "Survival", },
+            { name: "Hollow Knight", img: "thumbnails/hollowknight.png", url: "https://jeremy4401.github.io/SME/games/hollowknight.html", cat: "Action", },
+            { name: "10 Minutes Till Dawn", img: "thumbnails/10minutestilldawn.png", url: "https://jeremy4401.github.io/SME/games/10minutestilldawn.html", cat: "Action", },
+            { name: "1v1.LOL", img: "thumbnails/1v1lol.png", url: "https://jeremy4401.github.io/SME/games/1v1lol.html", cat: "Action", },
+            { name: "Amanda the Adventurer", img: "thumbnails/amandatheadventurer.png", url: "https://jeremy4401.github.io/SME/games/amandatheadventurer.html", cat: "Action", },
+            { name: "Baseball Bros", img: "thumbnails/baseballbros.png", url: "https://Jeremy4401.github.io/SME/games/baseballbros.html", cat: "Action", },
+            { name: "Basket Bros", img: "thumbnails/basketbros.png", url: "https://Jeremy4401.github.io/SME/games/basketbros.html", cat: "Action", },
+            { name: "Football Bros", img: "thumbnails/footballbros.png", url: "https://Jeremy4401.github.io/SME/games/footballbros.html", cat: "Action", },
+            { name: "Escape Road", img: "thumbnails/escaperoad.png", url: "https://Jeremy4401.github.io/SME/games/escaperoad.html", cat: "Action", },
+            { name: "Fallout", img: "thumbnails/fallout.png", url: "https://Jeremy4401.github.io/SME/games/fallout.html", cat: "Action", },
+            { name: "Flappy Bird", img: "thumbnails/flappybird.png", url: "https://Jeremy4401.github.io/SME/games/flappybird.html", cat: "Action", },
+            { name: "FNAF 1", img: "thumbnails/fnaf1.png", url: "https://Jeremy4401.github.io/SME/games/fnaf1.html", cat: "Action", },
+            { name: "FNAF 2", img: "thumbnails/fnaf2.png", url: "https://Jeremy4401.github.io/SME/games/fnaf2.html", cat: "Action", },
+            { name: "FNAF 3", img: "thumbnails/fnaf3.png", url: "https://Jeremy4401.github.io/SME/games/fnaf3.html", cat: "Action", },
+            { name: "FNAF 4", img: "thumbnails/fnaf4.png", url: "https://Jeremy4401.github.io/SME/games/fnaf4.html", cat: "Action", },
+            { name: "FNAF 4 Halloween Edition", img: "thumbnails/fnaf4halloween.png", url: "https://Jeremy4401.github.io/SME/games/fnaf4halloween.html", cat: "Action", },
+            { name: "Sister Location", img: "thumbnails/sisterlocation.png", url: "https://Jeremy4401.github.io/SME/games/sisterlocation.html", cat: "Action", },
+            { name: "Freddy Fazbear's Pizzeria Simulator", img: "thumbnails/pizzeriasimulator.png", url: "https://Jeremy4401.github.io/SME/games/pizzeriasimulator.html", cat: "Action", },
+            { name: "Ultimate Custom Night", img: "thumbnails/ultimatecustomnight.png", url: "https://Jeremy4401.github.io/SME/games/ultimatecustomnight.html", cat: "Action", },
+            { name: "Endoparasitic", img: "thumbnails/endoparasitic.png", url: "https://Jeremy4401.github.io/SME/games/endoparasitic.html", cat: "Action", },
+            { name: "Drive Mad", img: "thumbnails/drivemad.png", url: "https://Jeremy4401.github.io/SME/games/drivemad.html", cat: "Action", },
+            { name: "Drift Hunters", img: "thumbnails/drifthunters.png", url: "https://Jeremy4401.github.io/SME/games/drifthunters.html", cat: "Action", },
+            { name: "The Binding of Isaac", img: "thumbnails/bindingofisaac.png", url: "https://Jeremy4401.github.io/SME/games/bindingofisaac.html", cat: "Action", },
+            { name: "DOOM", img: "thumbnails/doom.png", url: "https://Jeremy4401.github.io/SME/games/doom.html", cat: "Action", },
+            { name: "DOOM 2", img: "thumbnails/doom2.png", url: "https://Jeremy4401.github.io/SME/games/doom2.html", cat: "Action", },
+            { name: "Fruit Ninja", img: "thumbnails/fruitninja.png", url: "https://Jeremy4401.github.io/SME/games/fruitninja.html", cat: "Action", },
+            { name: "Geometry Dash", img: "thumbnails/geometrydash.png", url: "https://Jeremy4401.github.io/SME/games/geometrydash.html", cat: "Action", },
+            { name: "Getting Over It", img: "thumbnails/gettingoverit.png", url: "https://Jeremy4401.github.io/SME/games/gettingoverit.html", cat: "Action", },
+            { name: "Granny", img: "thumbnails/granny1.png", url: "https://Jeremy4401.github.io/SME/games/granny1.html", cat: "Action", },
+            { name: "Granny Chapter 2", img: "thumbnails/granny2.png", url: "https://Jeremy4401.github.io/SME/games/granny2.html", cat: "Action", },
+            { name: "Granny Chapter 3", img: "thumbnails/granny3.png", url: "https://Jeremy4401.github.io/SME/games/granny3.html", cat: "Action", },
+            { name: "Controlled Flight", img: "thumbnails/controlledflight.png", url: "https://howthingsfly.si.edu/sites/default/files/unity/ControlledFlight_new/index.html", cat: "Action", },
+            { name: "Jetpack Joyride", img: "thumbnails/jetpackjoyride.png", url: "https://Jeremy4401.github.io/SME/games/jetpackjoyride.html", cat: "Action", },
+            { name: "Johnny Trigger", img: "thumbnails/johnnytrigger.png", url: "https://Jeremy4401.github.io/SME/games/johnnytrigger.html", cat: "Action", },
+            { name: "Kindergarten", img: "thumbnails/kindergarten.png", url: "https://Jeremy4401.github.io/SME/games/kindergarten.html", cat: "Action", },
+            { name: "Kindergarten 2", img: "thumbnails/kindergarten2.png", url: "https://Jeremy4401.github.io/SME/games/kindergarten2.html", cat: "Action", },
+            { name: "Kindergarten 3", img: "thumbnails/kindergarten3.png", url: "https://Jeremy4401.github.io/SME/games/kindergarten3.html", cat: "Action", },
+            { name: "Learn to Fly", img: "thumbnails/learntofly.png", url: "https://Jeremy4401.github.io/SME/games/learntofly.html", cat: "Action", },
+            { name: "Melon Playground", img: "thumbnails/melonplayground.png", url: "https://Jeremy4401.github.io/SME/games/melonplayground.html", cat: "Action", },
+            { name: "Doodle Jump", img: "thumbnails/doodlejump.png", url: "https://Jeremy4401.github.io/SME/games/doodlejump.html", cat: "Action", },
+            { name: "Nazi Zombies Portable", img: "thumbnails/nazizombies.png", url: "https://Jeremy4401.github.io/SME/games/nazizombies.html", cat: "Action", },
+            { name: "Papers, Please", img: "thumbnails/papersplease.png", url: "https://Jeremy4401.github.io/SME/games/papersplease.html", cat: "Action", },
+            { name: "Pixel Gun 3D", img: "thumbnails/pixelgun.png", url: "https://Jeremy4401.github.io/SME/games/pixelgun.html", cat: "Action", },
+            { name: "Plants vs Zombies", img: "thumbnails/plantsvszombies.png", url: "https://Jeremy4401.github.io/SME/games/plantsvszombies.html", cat: "Action", },
+            { name: "Plants vs Zombies 2 Gardenless", img: "thumbnails/plantsvszombies2.png", url: "https://Jeremy4401.github.io/SME/games/plantsvszombies2.html", cat: "Action", },
+            { name: "Pokemon", img: "thumbnails/pokemon.png", url: "https://Jeremy4401.github.io/SME/games/pokemon.html", cat: "Action", },
+            { name: "Raft", img: "thumbnails/raft.png", url: "https://Jeremy4401.github.io/SME/games/raft.html", cat: "Action", },
+            { name: "Ragdoll Archers", img: "thumbnails/ragdollarchers.png", url: "https://Jeremy4401.github.io/SME/games/ragdollarchers.html", cat: "Action", },
+            { name: "Two Player Battle", img: "thumbnails/2playerbattle.png", url: "https://turbowarp.org/292728003/embed", cat: "Action", },
+            { name: "Retro Bowl", img: "thumbnails/retrobowl.png", url: "https://Jeremy4401.github.io/SME/games/retrobowl.html", cat: "Action", },
+            { name: "Retro Bowl College", img: "thumbnails/retrobowlcollege.png", url: "https://Jeremy4401.github.io/SME/games/retrobowlcollege.html", cat: "Action", },
+            { name: "Slither.io", img: "thumbnails/slitherio.png", url: "https://Jeremy4401.github.io/SME/games/slitherio.html", cat: "Action", },
+            { name: "Slope", img: "thumbnails/slope.png", url: "https://Jeremy4401.github.io/SME/games/slope.html", cat: "Action", },
+            { name: "Smash Karts", img: "thumbnails/smashkarts.png", url: "https://Jeremy4401.github.io/SME/games/smashkarts.html", cat: "Action", },
+            { name: "Snow Rider 3D", img: "thumbnails/snowrider.png", url: "https://Jeremy4401.github.io/SME/games/snowrider.html", cat: "Action", },
+            { name: "Steal a Brainrot", img: "thumbnails/stealabrainrot.png", url: "https://Jeremy4401.github.io/SME/games/stealabrainrot.html", cat: "Action", },
+            { name: "Subway Surfers", img: "thumbnails/subwaysurfers.png", url: "https://Jeremy4401.github.io/SME/games/subwaysurfers.html", cat: "Action", },
+            { name: "SUPERHOT", img: "thumbnails/superhot.png", url: "https://Jeremy4401.github.io/SME/games/superhot.html", cat: "Action", },
+            { name: "Super Mario 64", img: "thumbnails/supermario64.png", url: "https://Jeremy4401.github.io/SME/games/supermario64.html", cat: "Action", },
+            { name: "Super Mario Bros", img: "thumbnails/supermariobros.png", url: "https://Jeremy4401.github.io/SME/games/supermariobros.html", cat: "Action", },
+            { name: "Survival Race", img: "thumbnails/survivalrace.png", url: "https://Jeremy4401.github.io/SME/games/survivalrace.html", cat: "Action", },
+            { name: "Temple Run 2", img: "thumbnails/templerun2.png", url: "https://Jeremy4401.github.io/SME/games/templerun2.html", cat: "Action", },
+            { name: "They are Coming", img: "thumbnails/theyarecoming.png", url: "https://Jeremy4401.github.io/SME/games/theyarecoming.html", cat: "Action", },
+            { name: "Baldi's Basics", img: "thumbnails/baldisbasics.png", url: "https://Jeremy4401.github.io/SME/games/baldisbasics.html", cat: "Action", },
+            { name: "Tiny Fishing", img: "thumbnails/tinyfishing.png", url: "https://Jeremy4401.github.io/SME/games/tinyfishing.html", cat: "Action", },
+            { name: "Tomb of the Mask", img: "thumbnails/tombofthemask.png", url: "https://Jeremy4401.github.io/SME/games/tombofthemask.html", cat: "Action", },
+            { name: "Cut the Rope", img: "thumbnails/cuttherope.png", url: "https://Jeremy4401.github.io/SME/games/cuttherope.html", cat: "Action", },
+            { name: "Crossy Road", img: "thumbnails/crossyroad.png", url: "https://Jeremy4401.github.io/SME/games/crossyroad.html", cat: "Action", },
+            { name: "Cookie Clicker", img: "thumbnails/cookieclicker.png", url: "https://Jeremy4401.github.io/SME/games/cookieclicker.html", cat: "Action", },
+            { name: "Buildnow GG", img: "thumbnails/buildnow.png", url: "https://Jeremy4401.github.io/SME/games/buildnow.html", cat: "Action", },
+            { name: "Bouncemasters", img: "thumbnails/bouncemasters.png", url: "https://Jeremy4401.github.io/SME/games/bouncemasters.html", cat: "Action", },
+            { name: "Bitlife", img: "thumbnails/bitlife.png", url: "https://Jeremy4401.github.io/SME/games/bitlife.html", cat: "Action", },
+            { name: "Bank Robbery 2", img: "thumbnails/bankrobbery2.png", url: "https://jeremy4401.github.io/SME/games/bankrobbery2.html", cat: "Action", },
+            { name: "Basket Random", img: "thumbnails/basketrandom.png", url: "https://jeremy4401.github.io/SME/games/basketrandom.html", cat: "Action", },
+            { name: "ULTRAKILL", img: "thumbnails/ultrakill.png", url: "https://jeremy4401.github.io/SME/games/ultrakill.html", cat: "Action", },
+            { name: "Bendy & The Ink Machine", img: "thumbnails/bendy.png", url: "https://jeremy4401.github.io/SME/games/bendy.html", cat: "Action", },
+            { name: "Cuphead", img: "thumbnails/cuphead.png", url: "https://jeremy4401.github.io/SME/games/cuphead.html", cat: "Action", },
+            { name: "Half Life", img: "thumbnails/halflife.png", url: "https://jeremy4401.github.io/SME/games/halflife.html", cat: "Action", },
+            { name: "R.E.P.O.", img: "thumbnails/repo.png", url: "https://jeremy4401.github.io/SME/games/repo.html", cat: "Action", },
+            { name: "Bad Parenting", img: "thumbnails/badparenting.png", url: "https://jeremy4401.github.io/SME/games/badparenting.html", cat: "Horror", }
         ];
 
         let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
@@ -1670,7 +1179,6 @@
             const sec = document.getElementById("games");
             if (!sec) return;
 
-            // Render category buttons
             let categoryButtons = `<button class="tabBtn" onclick="renderGames('All')" style="margin-right:10px;">All</button>`;
             categories.forEach(cat => {
                 categoryButtons += `<button class="tabBtn" onclick="renderGames('${cat}')" style="margin-right:10px;">${cat}</button>`;
@@ -1708,7 +1216,6 @@
             }
             localStorage.setItem("favorites", JSON.stringify(favorites));
             
-            // Re-render the current view if necessary
             if (document.getElementById('games').classList.contains('active')) renderGames();
             if (document.getElementById('favorites').classList.contains('active')) renderFavorites();
         }
@@ -1738,7 +1245,6 @@
             });
         }
         
-        // --- GAME MODAL LOGIC ---
         let selectedGame = null;
         
         function openGameModal(name) {
@@ -1750,7 +1256,6 @@
             document.getElementById("modalDesc").textContent = `Category: ${selectedGame.cat}`;
             document.getElementById("playBtn").onclick = () => launchGame(selectedGame.name);
 
-            // Mock Playtime display
             const playtimeHours = (Math.random() * 50).toFixed(1);
             document.getElementById("playtimeBox").innerHTML = `<em>Total Playtime: ${playtimeHours} hours (Mock)</em>`;
 
@@ -1773,11 +1278,9 @@
             embedFrame.src = enc(game.url);
             document.getElementById("embedWin").style.display = 'block';
 
-            // Optional: Hide sidebar for better immersion
             document.getElementById("sidebar").style.display = 'none';
             document.getElementById("homeBtn").style.display = 'flex';
 
-            // Esc listener to exit game
             document.addEventListener('keydown', handleEsc, true);
         }
 
@@ -1794,7 +1297,7 @@
 
             if (embedWin.style.display === 'block') {
                 embedWin.style.display = 'none';
-                embedFrame.src = 'about:blank'; // Stop audio/video playback
+                embedFrame.src = 'about:blank'; 
 
                 document.getElementById("sidebar").style.display = 'flex';
                 document.getElementById("homeBtn").style.display = 'none';
@@ -1802,16 +1305,15 @@
                 
                 addActivity("Game Closed", `Stopped playing ${selectedGame ? selectedGame.name : 'a game'}`);
                 selectedGame = null;
-                renderHome(); // Refresh home dashboard
+                renderHome(); 
             }
         }
         
-        // --- PROFILE & SETTINGS ---
         function renderProfile() {
             const sec = document.getElementById("profile");
             sec.innerHTML = `
                 <h2>My Profile</h2>
-                <div class="profileBanner"></div>
+                <div class="profileBanner" style="background: linear-gradient(90deg, var(--accent), var(--secondary-accent));"></div>
                 <div class="profileAvatar" style="background-image:url('${profile.avatar}');"></div>
                 <h1 style="margin-top:10px;">${profile.username}</h1>
                 <p style="color:var(--accent);">${profile.status}</p>
@@ -1859,8 +1361,7 @@
                 tabContent = `
                     <h3>Security Settings</h3>
                     <p>Account Status: <b>${currentUserId ? 'Online (Anonymous/Authenticated)' : 'Offline'}</b></p>
-                    <p>To fully secure your account, you should implement a proper Firebase Email/Password or Google Sign-In.</p>
-                    <button onclick="if(confirm('Are you sure you want to erase all local data?')) resetLocalData()" class="tabBtn" style="background:#c62828;">Reset Local Data</button>
+                    <button onclick="if(confirm('Are you sure you want to erase all local data? This will reset your recent games, favorites, and profile.')) resetLocalData()" class="tabBtn" style="background:#c62828; border-color:#c62828;">Reset Local Data</button>
                 `;
             }
 
@@ -1875,7 +1376,6 @@
             localStorage.setItem("profile", JSON.stringify(profile));
             
             if (currentUserId) {
-                // Update Firebase profile
                 await updateDoc(doc(db, "users", currentUserId), {
                     username: profile.username,
                     bio: profile.bio,
@@ -1884,8 +1384,8 @@
             }
 
             notify("Profile saved!", "success");
-            renderProfile(); // Refresh profile page
-            renderSettings('profile'); // Keep settings tab open
+            renderProfile(); 
+            renderSettings('profile'); 
         }
 
         function resetLocalData() {
@@ -1893,19 +1393,15 @@
             localStorage.removeItem("activity");
             localStorage.removeItem("favorites");
             localStorage.removeItem("feed");
-            localStorage.removeItem("mockMessages"); // Remove old mock data
             localStorage.removeItem("profile"); 
-            // Do NOT remove friendCode as it's tied to the Firebase anonymous ID
-            
-            // Reload the page to reset the entire state
             location.reload();
         }
 
 
-        // Call renderHome initially to populate the dashboard and Games
+        // Call renderHome initially and start UI effects
         document.addEventListener('DOMContentLoaded', () => {
             renderHome();
-            // Start listeners after Firebase init in onAuthStateChanged
+            startSnowfall();
         });
     </script>
 </body>

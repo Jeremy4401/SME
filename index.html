@@ -36,48 +36,85 @@
             position: relative;
         }
         
-        /* ------------------ NAVIGATION BAR (THE PAGES) ------------------ */
+        /* ------------------ NAVIGATION BAR (ALL 10 PAGES + BUTTON) ------------------ */
         .navbar {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: var(--navbar-height);
-            background-color: var(--color-card-bg); /* Darker background */
+            background-color: var(--color-card-bg);
             border-bottom: 2px solid var(--color-primary);
             display: flex;
             align-items: center;
-            padding: 0 40px;
+            padding: 0 20px;
             z-index: 1000;
             box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
+            overflow-x: auto; 
+            white-space: nowrap;
         }
 
         .navbar-logo {
             font-size: 1.8em;
             font-weight: 800;
             color: var(--color-primary);
-            margin-right: 40px;
+            flex-shrink: 0;
+            margin-right: 25px;
+        }
+
+        .navbar-links {
+            display: flex;
+            align-items: center;
+            height: 100%;
         }
 
         .navbar-links a {
             color: var(--color-text);
-            margin-right: 25px;
-            font-size: 1.1em;
+            margin-right: 20px;
+            font-size: 1em;
             font-weight: 600;
             padding: 5px 0;
             transition: color var(--transition-speed), border-bottom var(--transition-speed);
+            flex-shrink: 0;
         }
 
         .navbar-links a:hover, .navbar-links a.active {
             color: var(--color-primary);
             border-bottom: 2px solid var(--color-secondary);
         }
+
+        /* Panic Button Styling */
+        #panic-button {
+            background-color: #ff0000;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            margin-left: auto; 
+            border-radius: 5px;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: background-color var(--transition-speed), transform var(--transition-speed);
+            flex-shrink: 0;
+        }
+
+        #panic-button:hover {
+            background-color: #cc0000;
+            transform: scale(1.05);
+        }
         /* ------------------ END NAVIGATION BAR ------------------ */
 
 
-        /* ------------------ GAME LAYOUT (NETFLIX STYLE) ------------------ */
+        /* ------------------ GAME LAYOUT (NETFLIX STYLE & FULL PNG) ------------------ */
+        .page-content {
+             min-height: calc(100vh - var(--navbar-height)); 
+             padding: 60px 40px;
+             text-align: center; /* Default for simple pages */
+        }
+
         .game-section {
-            padding: 40px 0 20px 40px; /* Padding for left alignment */
+            padding: 40px 0 20px 40px; 
+            text-align: left; /* Override for game rows */
         }
         
         .section-title {
@@ -90,21 +127,20 @@
 
         .game-row {
             display: flex;
-            overflow-x: scroll; /* Horizontal scrolling */
+            overflow-x: scroll; 
             padding-bottom: 20px;
-            gap: 15px; /* Space between cards */
-            -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
-            /* Hide scrollbar for aesthetics */
-            scrollbar-width: none; /* Firefox */
+            gap: 15px; 
+            -webkit-overflow-scrolling: touch; 
+            scrollbar-width: none;
         }
         .game-row::-webkit-scrollbar {
-            display: none; /* Chrome, Safari */
+            display: none;
         }
         
-        /* --- Individual Game Card (Updated for full PNG visibility) --- */
+        /* --- Individual Game Card (Fixed for full PNG visibility) --- */
         .card {
-            flex-shrink: 0; /* Important: prevents cards from shrinking */
-            width: 250px; /* Fixed width for the Netflix look */
+            flex-shrink: 0;
+            width: 250px;
             background-color: var(--color-card-bg);
             border: 2px solid var(--color-card-bg);
             border-radius: 10px;
@@ -115,26 +151,26 @@
         }
 
         .game-card:hover {
-            transform: scale(1.05); /* Zoom effect on hover */
-            box-shadow: 0 8px 30px rgba(229, 62, 62, 0.7); /* Red hover glow */
+            transform: scale(1.05);
+            box-shadow: 0 8px 30px rgba(229, 62, 62, 0.7); 
             border-color: var(--color-primary);
         }
 
         .card-image-container {
             width: 100%;
-            height: auto; 
-            background-color: var(--color-background); /* Dark background for transparent PNGs */
-            padding: 10px; /* Padding to ensure space around the full image */
+            height: 150px; 
+            background-color: var(--color-background);
+            padding: 10px; 
             display: flex;
             justify-content: center;
             align-items: center;
         }
         
         .game-card img {
-            width: 100%;
+            max-width: 100%;
+            max-height: 100%;
             height: auto;
-            max-height: 140px; /* Max height to keep row size consistent but auto width/height ratio */
-            object-fit: contain; /* Ensures the *entire* image is visible */
+            object-fit: contain; 
         }
 
         .card-details {
@@ -154,48 +190,6 @@
             margin-bottom: 5px;
         }
         /* ------------------ END GAME LAYOUT ------------------ */
-
-
-        /* ------------------ VISUAL EFFECTS (SNOW & BELLS) ------------------ */
-        .snow, .bell-fall {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 99; /* Below navigation, above main content */
-        }
-
-        .flake {
-            position: absolute;
-            background: #ffffff;
-            border-radius: 50%;
-            opacity: 0.8;
-            animation: snowfall linear infinite;
-        }
-        
-        .bell {
-            position: absolute;
-            content: '🔔';
-            font-size: 1.2em;
-            opacity: 0.7;
-            animation: bellfall linear infinite;
-        }
-        
-        @keyframes snowfall {
-            0% { transform: translateY(-100px); opacity: 0; }
-            50% { opacity: 1; }
-            100% { transform: translateY(100vh); opacity: 0; }
-        }
-
-        @keyframes bellfall {
-            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
-            10% { opacity: 1; }
-            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
-        }
-        /* ------------------ END VISUAL EFFECTS ------------------ */
-
 
         /* --- Embed/Game Container (Fullscreen Modal) --- */
         #embed-container {
@@ -240,22 +234,33 @@
 </head>
 <body>
 
-    <div class="snow" id="snow-container"></div>
-    <div class="bell-fall" id="bell-container"></div>
+    <div class="snow-container" id="snow-container"></div>
+    <div class="bell-fall-container" id="bell-container"></div>
     <nav class="navbar">
         <div class="navbar-logo">StudyMath</div>
         <div class="navbar-links">
             <a href="#home" class="active">🏠 Home</a>
             <a href="#games">🎮 Games</a>
-            <a href="#about">ℹ️ About</a>
-            <a href="#contact">📞 Contact</a>
+            <a href="#favorites">⭐ Favorites</a>
+            <a href="#theater">🎬 Theater</a>
+            <a href="#proxies">🌐 Proxies</a>
+            <a href="#requests">📧 Requests</a>
+            <a href="#settings">⚙️ Settings</a>
+            <a href="#friends">🤝 Friends</a>
+            <a href="#profile">👤 Profile</a>
         </div>
+        <button id="panic-button" onclick="triggerPanic()">🚨 PANIC</button>
     </nav>
 
-    <main id="games">
+    <main>
         
-        <div class="game-section">
-            <h2 class="section-title">All 82 Games (Just for you!)</h2>
+        <div id="home" class="page-content">
+            <h2 class="section-title" style="border-left-color: var(--color-primary);">Welcome Home!</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">This is the main landing page for your StudyMath site. Use the navigation bar above to explore the site's full functionality.</p>
+        </div>
+        
+        <div id="games" class="game-section page-content">
+            <h2 class="section-title">All 82 Games (Full Library)</h2>
             <div class="game-row">
             
                 <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/10minutestilldawn.html', '10 Minutes Till Dawn')">
@@ -1177,21 +1182,65 @@
                         <p>Fast-paced retro FPS action.</p>
                     </div>
                 </div>
-                
                 </div>
         </div>
         
-        <div id="home" style="min-height: 50vh; padding: 40px; text-align: center;">
-            <h2 class="section-title">Welcome Home!</h2>
-            <p>This is the main content area for your StudyMath site.</p>
+        <div id="favorites" class="page-content">
+            <h2 class="section-title">⭐ Your Favorites</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">This area is for the games, movies, and tools you have marked as your favorites for quick access.</p>
+            <div style="margin-top: 30px; padding: 20px; background-color: var(--color-card-bg); border-radius: 10px;">
+                <p>Example: Display a few custom game cards here.</p>
+            </div>
         </div>
-        <div id="about" style="min-height: 50vh; padding: 40px; text-align: center;">
-            <h2 class="section-title">About This Project</h2>
-            <p>More information about the site and its purpose.</p>
+
+        <div id="theater" class="page-content">
+            <h2 class="section-title">🎬 Movie Theater / Video Zone</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">This area can be used to embed a video player or streaming site for watching movies/shows.</p>
+             <iframe width="560" height="315" src="https://www.youtube.com/embed/dQw4w9WgXcQ" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="margin-top: 20px; max-width: 100%;"></iframe>
         </div>
-        <div id="contact" style="min-height: 50vh; padding: 40px; text-align: center;">
-            <h2 class="section-title">Contact Us</h2>
-            <p>How to get in touch.</p>
+
+        <div id="proxies" class="page-content">
+            <h2 class="section-title">🌐 Proxy List & Unblockers</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">This is where you would host or link your list of various proxies and unblockers.</p>
+            <ul style="list-style-type: none; padding: 0; margin-top: 20px;">
+                <li><a href="#" style="color: var(--color-secondary); font-weight: 600;">Proxy 1 Link</a></li>
+                <li><a href="#" style="color: var(--color-secondary); font-weight: 600;">Proxy 2 Link</a></li>
+                <li><a href="#" style="color: var(--color-secondary); font-weight: 600;">Proxy 3 Link</a></li>
+            </ul>
+        </div>
+
+        <div id="requests" class="page-content">
+            <h2 class="section-title">📧 Game/Feature Requests</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">Use this section for a form or submission box so users can request new games or features for the site.</p>
+            <button style="margin-top: 20px; background-color: var(--color-secondary); color: white; padding: 10px 20px; border: none; border-radius: 5px; font-size: 1em; cursor: pointer;">Submit New Request</button>
+        </div>
+
+        <div id="settings" class="page-content">
+            <h2 class="section-title">⚙️ User Settings</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">Options to customize the site's experience, change theme (Dark/Light), manage notifications, and clear cache.</p>
+            <div style="margin-top: 30px; background-color: var(--color-card-bg); padding: 20px; border-radius: 10px; display: inline-block; text-align: left;">
+                <label style="display: block; margin-bottom: 10px;"><input type="checkbox" checked> Enable Falling Snow</label>
+                <label style="display: block;"><input type="checkbox"> Use Light Theme</label>
+            </div>
+        </div>
+
+        <div id="friends" class="page-content">
+            <h2 class="section-title">🤝 Friends List</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">Connect with other users, view their profiles, and send direct messages.</p>
+            <ul style="list-style-type: none; padding: 0; margin-top: 20px;">
+                <li style="margin-bottom: 5px; color: var(--color-secondary);">User_001 (Online)</li>
+                <li style="margin-bottom: 5px; color: var(--color-text-light);">GamerBuddy (Offline)</li>
+            </ul>
+        </div>
+
+        <div id="profile" class="page-content">
+            <h2 class="section-title">👤 Your Profile</h2>
+            <p style="font-size: 1.2em; color: var(--color-text-light);">Display your user stats, favorite games, achievements, and customizable avatar.</p>
+            <div style="margin-top: 30px; background-color: var(--color-card-bg); padding: 20px; border-radius: 10px; display: inline-block;">
+                <p>Username: **TheGamer**</p>
+                <p>Games Played: **142**</p>
+                <p>Achievements: **5/10 Unlocked**</p>
+            </div>
         </div>
 
     </main>
@@ -1206,7 +1255,7 @@
         function openEmbedURL(url, title) {
             document.getElementById('game-iframe').src = url;
             document.getElementById('embed-container').style.display = 'block';
-            document.body.style.overflow = 'hidden'; // Prevent scrolling the main page
+            document.body.style.overflow = 'hidden'; 
             if (title) {
                 document.title = title + ' | Game Loaded';
             }
@@ -1215,7 +1264,7 @@
         function closeEmbed() {
             document.getElementById('game-iframe').src = '';
             document.getElementById('embed-container').style.display = 'none';
-            document.body.style.overflow = 'auto'; // Re-enable scrolling
+            document.body.style.overflow = 'auto'; 
             document.title = '🎄 StudyMath Game Library 🎅'; 
         }
 
@@ -1225,10 +1274,16 @@
             }
         });
 
-        // --- VISUAL EFFECTS GENERATION ---
+        // --- PANIC BUTTON FUNCTIONALITY ---
+        function triggerPanic() {
+            // Redirects to a safe, academic site
+            window.location.replace("https://www.google.com/search?q=educational+resources");
+        }
+
+        // --- VISUAL EFFECTS GENERATION (Keeping for aesthetics) ---
         function createFallingElements(containerId, elementType, className, count, minSize, maxSize, minDuration, maxDuration, content = null) {
             const container = document.getElementById(containerId);
-            if (!container) return;
+             if (!container) return; // Safety check
 
             for (let i = 0; i < count; i++) {
                 const element = document.createElement(elementType);
@@ -1249,6 +1304,18 @@
                 container.appendChild(element);
             }
         }
+
+        // The snow and bell containers need to be dynamically created since I removed them in the previous version
+        // Re-adding the containers here since they were removed from the HTML body in the last response error
+        const snowContainer = document.createElement('div');
+        snowContainer.id = 'snow-container';
+        snowContainer.className = 'snow';
+        document.body.appendChild(snowContainer);
+
+        const bellContainer = document.createElement('div');
+        bellContainer.id = 'bell-container';
+        bellContainer.className = 'bell-fall';
+        document.body.appendChild(bellContainer);
 
         // Create Snowflakes (100 elements)
         createFallingElements('snow-container', 'div', 'flake', 100, 2, 5, 10, 30);

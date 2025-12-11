@@ -1,1106 +1,810 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <title>SME Launcher - Festive Edition</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-    <audio id="jingle" src="https://www.soundboard.com/mediafiles/hr/hrQY94g1W4Yk7fD3D4YnL5g1113524Q31011831_1.mp3" preload="auto"></audio>
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎄 StudyMath Game Library 🎅</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    
     <style>
-        @font-face {
-            font-family: "Comic Sans MS";
-            src: local("Comic Sans MS");
+        :root {
+            /* Christmas Theme Colors */
+            --color-primary: #e53e3e; /* Bright Red */
+            --color-secondary: #38a169; /* Evergreen */
+            --color-background: #0d1117; /* Dark Base */
+            --color-card-bg: #1f2937; /* Dark Slate */
+            --color-text: #f7fafc; /* Near White Text */
+            --color-text-light: #a0aec0; /* Muted Light Grey */
+            --color-border: #4a5568; /* Grey Border */
+            --transition-speed: 0.3s;
         }
 
-        /* --- THEME COLORS (Christmas/Snow) --- */
-        :root {
-            --bg: #1c3943; /* Dark Blue/Green */
-            --bg2: #2b5563; /* Medium Blue/Green */
-            --text: #ffffff;
-            --accent: #e53935; /* Santa Red */
-            --accent-light: #ff7043; /* Orange/Red for hover */
-            --sidebar: #0e2a33; /* Very dark sidebar */
-            --snow-color: #e0f2f1;
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Poppins', sans-serif;
         }
 
         body {
-            margin: 0;
-            background: var(--bg);
-            color: var(--text);
-            font-family: "Comic Sans MS";
+            background-color: var(--color-background);
+            color: var(--color-text);
+            padding: 20px;
+            /* Added for falling visual effects */
             overflow-x: hidden;
-            /* Simple snow background simulation */
-            background-image: 
-                radial-gradient(var(--snow-color) 1px, transparent 0),
-                radial-gradient(var(--snow-color) 1px, transparent 0);
-            background-size: 5px 5px;
-            background-position: 0 0, 2px 2px;
+            position: relative; 
         }
 
-        /* Performance Mode Class */
-        body.performance-mode {
-            background-image: none; /* Disable snow effects */
-            transition: none !important; /* Disable all transitions */
+        header {
+            text-align: center;
+            padding: 40px 0;
+            border-bottom: 1px solid var(--color-border);
+            margin-bottom: 40px;
         }
 
-        body.light {
-            --bg: #f5f5f5;
-            --bg2: #ffffff;
-            --text: #111;
-            --accent: #2196f3;
-            --accent-light: #64b5f6;
-            --sidebar: #222;
+        header h1 {
+            font-size: 2.5em;
+            color: var(--color-primary);
         }
 
-        /* SIDEBAR */
-        #sidebar {
+        /* ------------------ VISUAL EFFECTS (SNOW & BELLS) ------------------ */
+        .snow, .bell-fall {
             position: fixed;
             top: 0;
             left: 0;
-            width: 75px;
+            width: 100%;
             height: 100%;
-            background: var(--sidebar);
-            padding-top: 20px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 1000;
-            box-shadow: 2px 0 10px #000a;
+            pointer-events: none;
+            z-index: 999;
         }
 
-        #sidebar div {
-            padding: 15px;
-            cursor: pointer;
-            text-align: center;
-            font-size: 24px;
-            transition: 0.2s;
-            color: var(--snow-color); /* Light icons for visibility */
-        }
-
-        #sidebar div:hover {
-            transform: scale(1.2);
-            color: var(--accent-light);
-            text-shadow: 0 0 8px var(--accent);
-        }
-
-        /* MAIN */
-        #main {
-            margin-left: 90px;
-            padding: 20px;
-        }
-
-        .section {
-            display: none;
-            animation: fadeIn 0.4s ease;
-        }
-
-        .section.active {
-            display: block;
-        }
-
-        /* HOME ELEMENTS */
-        .homeCard {
-            background: var(--bg2);
-            padding: 15px;
-            border-radius: 12px;
-            margin-bottom: 20px;
-            box-shadow: 0 4px 12px #0008;
-        }
-
-        /* GAME CARDS */
-        .card {
-            background: var(--bg2);
-            width: 260px;
-            height: 380px;
-            border-radius: 12px;
-            padding: 12px;
-            display: inline-flex;
-            flex-direction: column;
-            justify-content: space-between;
-            align-items: center;
-            margin: 8px;
-            cursor: pointer;
-            transition: 0.2s;
-            position: relative;
-            vertical-align: top;
-            box-shadow: 0 4px 8px #0008;
-        }
-
-        .card:hover {
-            transform: translateY(-6px) scale(1.03);
-            box-shadow: 0 10px 20px #000a;
-        }
-
-        .card img {
-            width: 100%;
-            height: auto;
-            max-height: 260px;
-            object-fit: contain;
-            border-radius: 10px;
-            display: block;
-        }
-
-        .star {
+        /* Styling for the snowflakes */
+        .flake {
             position: absolute;
-            top: 8px;
-            left: 8px;
-            font-size: 20px;
-            cursor: pointer;
-            color: #777;
-            text-shadow: 1px 1px 2px #000;
-        }
-
-        .star.fav {
-            color: gold;
-            text-shadow: 0 0 10px gold;
-        }
-
-        /* PROFILE */
-        .profileBanner {
-            width: 100%;
-            height: 90px;
-            background: linear-gradient(90deg, var(--accent), var(--bg2));
-            border-radius: 12px;
-        }
-
-        .profileAvatar {
-            width: 96px;
-            height: 96px;
+            background: #ffffff;
             border-radius: 50%;
-            border: 5px solid var(--bg);
-            margin-top: -48px;
-            margin-left: 15px;
-            background: #333;
-            object-fit: cover;
-            box-shadow: 0 0 10px #000a;
+            opacity: 0.8;
+            animation: snowfall linear infinite;
         }
         
-        /* INPUT STYLES */
-        input[type="text"], input[type="url"], textarea, select {
-            padding: 10px;
-            width: 90%;
-            margin-bottom: 10px;
-            border-radius: 8px;
-            border: 1px solid #555;
-            background: var(--bg);
-            color: var(--text);
-            box-sizing: border-box;
-        }
-
-        button, .tabBtn {
-            padding: 10px 15px;
-            border-radius: 8px;
-            border: none;
-            background: var(--accent);
-            color: white;
-            cursor: pointer;
-            transition: 0.2s;
-        }
-
-        button:hover, .tabBtn:hover {
-            background: var(--accent-light);
-            box-shadow: 0 0 8px var(--accent-light);
-        }
-
-        /* FRIENDS & CHAT */
-        #friendsContent {
-            display: flex;
-            gap: 20px;
-        }
-
-        #friendsList, #chatWindow {
-            background: var(--bg2);
-            padding: 15px;
-            border-radius: 12px;
-            height: 60vh;
-            overflow-y: auto;
-            box-shadow: 0 0 8px #0008;
-        }
-
-        #friendsList {
-            flex: 1;
-            min-width: 200px;
-        }
-
-        #chatWindow {
-            flex: 3;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .friend-item {
-            padding: 10px;
-            margin-bottom: 5px;
-            border-radius: 8px;
-            background: var(--bg);
-            cursor: pointer;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+        /* Styling for the jingle bells */
+        .bell {
+            position: absolute;
+            /* Unicode for a small silver/gold bell symbol */
+            content: '🔔';
+            font-size: 1.2em; /* Slightly larger than snow */
+            opacity: 0.7;
+            animation: bellfall linear infinite;
         }
         
-        .friend-item.active {
-            border: 2px solid var(--accent);
+        @keyframes snowfall {
+            0% { transform: translateY(-100px); opacity: 0; }
+            50% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
         }
 
-        .chat-message {
-            margin-bottom: 10px;
-            padding: 8px;
+        @keyframes bellfall {
+            0% { transform: translateY(-100px) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+        }
+        /* ------------------ END VISUAL EFFECTS ------------------ */
+
+        /* --- Game Grid Layout --- */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 25px;
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative; /* To ensure it stays above falling effects */
+            z-index: 100;
+        }
+
+        /* --- Individual Game Card --- */
+        .card {
+            background-color: var(--color-card-bg);
+            border: 2px solid var(--color-secondary); /* Evergreen border */
             border-radius: 10px;
-            max-width: 70%;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4);
+            transition: transform var(--transition-speed), box-shadow var(--transition-speed);
+            cursor: pointer;
         }
 
-        .chat-message.me {
-            background: var(--accent);
-            margin-left: auto;
-        }
-        
-        .chat-message.them {
-            background: #3a5e6d; /* Different color */
-        }
-        
-        #messageInput {
-            width: calc(100% - 100px);
-            margin-right: 10px;
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(229, 62, 62, 0.5); /* Red hover glow */
+            border-color: var(--color-primary);
         }
 
-        /* ANIMATIONS */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(10px);
-            }
+        .game-card img {
+            width: 100%;
+            height: 150px; 
+            object-fit: cover;
+            border-bottom: 1px solid var(--color-border);
+        }
 
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .game-card h3 {
+            padding: 10px 15px 5px 15px;
+            font-size: 1.1em;
+            font-weight: 600;
+            color: var(--color-primary);
+        }
+
+        .game-card p {
+            padding: 0 15px 15px 15px;
+            font-size: 0.9em;
+            color: var(--color-text-light);
+        }
+
+        /* --- Embed/Game Container (Hidden by default) --- */
+        #embed-container {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1500;
+            padding: 10px;
+        }
+
+        #game-iframe {
+            width: 100%;
+            height: calc(100% - 40px);
+            border: none;
+            display: block;
+            margin-top: 30px;
+        }
+
+        #close-button {
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            background: var(--color-primary);
+            color: white;
+            border: none;
+            padding: 5px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: background var(--transition-speed);
+        }
+
+        #close-button:hover {
+            background: #9b2c2c; /* Darker Red */
         }
     </style>
 </head>
+<body>
 
-<body onload="renderHome(); renderProfile();">
-    <div id="sidebar">
-        <div onclick="nav('homeDashboard'); playJingle()">🏠</div>
-        <div onclick="nav('games'); playJingle()">🎮</div>
-        <div onclick="nav('favorites'); playJingle()">⭐</div>
-        <div onclick="nav('theater'); playJingle()">🎬</div>
-        <div onclick="nav('friends'); playJingle()">👥</div>
-        <div onclick="nav('profile'); playJingle()">👤</div>
-        <div onclick="nav('settingsPage'); playJingle()">⚙️</div>
-        <div onclick="toggleTheme(); playJingle()">🌗</div>
-        <div onclick="panic(); playJingle()">⚠</div>
+    <div class="snow" id="snow-container"></div>
+    <div class="bell-fall" id="bell-container"></div>
+    <header>
+        <h1>🎄 StudyMath Game Library 🎅</h1>
+        <p>Click any card to launch the game.</p>
+    </header>
+
+    <main>
+        <div id="game-grid" class="game-grid">
+            
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/10minutestilldawn.html', '10 Minutes Till Dawn')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/10minutestilldawn.png" alt="10 Minutes Till Dawn Icon">
+                <h3>10 Minutes Till Dawn</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Survive the endless horde!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/1v1lol.html', '1v1.LOL')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/1v1lol.png" alt="1v1.LOL Icon">
+                <h3>1v1.LOL</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Competitive shooter and building game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/amandatheadventurer.html', 'Amanda the Adventurer')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/amandatheadventurer.png" alt="Amanda the Adventurer Icon">
+                <h3>Amanda the Adventurer</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Spooky children's show horror game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/badparenting.html', 'Bad Parenting')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/badparenting.png" alt="Bad Parenting Icon">
+                <h3>Bad Parenting</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Chaotic family life simulator.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/baldisbasics.html', 'Baldi\'s Basics')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/baldisbasics.png" alt="Baldi's Basics Icon">
+                <h3>Baldi's Basics</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Education and learning horror game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bankrobbery2.html', 'Bank Robbery 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bankrobbery2.png" alt="Bank Robbery 2 Icon">
+                <h3>Bank Robbery 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Plan and execute the perfect heist.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/baseballbros.html', 'Baseball Bros')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/baseballbros.png" alt="Baseball Bros Icon">
+                <h3>Baseball Bros</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Fast-paced baseball action.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/basketballstars.html', 'Basketball Stars')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/basketballstars.png" alt="Basketball Stars Icon">
+                <h3>Basketball Stars</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Online 2-player basketball.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/basketbros.html', 'Basket Bros')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/basketbros.png" alt="Basket Bros Icon">
+                <h3>Basket Bros</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Funny and physics-based basketball.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/basketrandom.html', 'Basket Random')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/basketrandom.png" alt="Basket Random Icon">
+                <h3>Basket Random</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Wacky and unpredictable 2-player basketball.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bendy.html', 'Bendy')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bendy.png" alt="Bendy and the Ink Machine Icon">
+                <h3>Bendy</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">First-person survival horror.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bindingofisaac.html', 'Binding of Isaac')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bindingofisaac.png" alt="The Binding of Isaac Icon">
+                <h3>The Binding of Isaac</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Dungeon crawling rogue-lite.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bitlife.html', 'BitLife')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bitlife.png" alt="BitLife Icon">
+                <h3>BitLife</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Life simulator where every choice matters.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bottlejump.html', 'Bottle Jump 3D')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bottlejump.png" alt="Bottle Jump 3D Icon">
+                <h3>Bottle Jump 3D</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Master the art of the bottle flip.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bouncemasters.html', 'Bouncemasters')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bouncemasters.png" alt="Bouncemasters Icon">
+                <h3>Bouncemasters</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Launch a penguin as far as possible.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/bowmasters.html', 'Bowmasters')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/bowmasters.png" alt="Bowmasters Icon">
+                <h3>Bowmasters</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Aim and shoot physics game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/buckshotroulette.html', 'Buckshot Roulette')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/buckshotroulette.png" alt="Buckshot Roulette Icon">
+                <h3>Buckshot Roulette</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">A deadly game of chance.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/buildnow.html', 'BuildNow.gg')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/buildnow.png" alt="BuildNow.gg Icon">
+                <h3>BuildNow.gg</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Competitive online building and shooting.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/cookieclicker.html', 'Cookie Clicker')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/cookieclicker.png" alt="Cookie Clicker Icon">
+                <h3>Cookie Clicker</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The original incremental idle game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/crossyroad.html', 'Crossy Road')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/crossyroad.png" alt="Crossy Road Icon">
+                <h3>Crossy Road</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Why did the chicken cross the road?</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/cuphead.html', 'Cuphead')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/cuphead.png" alt="Cuphead Icon">
+                <h3>Cuphead</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Run-and-gun platform action.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/cuttherope.html', 'Cut the Rope')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/cuttherope.png" alt="Cut the Rope Icon">
+                <h3>Cut the Rope</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Feed the candy to Om Nom!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/doodlejump.html', 'Doodle Jump')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/doodlejump.png" alt="Doodle Jump Icon">
+                <h3>Doodle Jump</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Classic jumping platformer.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/doom.html', 'DOOM')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/doom.png" alt="DOOM Icon">
+                <h3>DOOM</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The original first-person shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/doom2.html', 'Doom 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/doom2.png" alt="Doom 2 Icon">
+                <h3>Doom 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">More demons, more guns.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/doom3.html', 'Doom 3')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/doom3.png" alt="Doom 3 Icon">
+                <h3>Doom 3</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The legendary horror shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/drifthunters.html', 'Drift Hunters')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/drifthunters.png" alt="Drift Hunters Icon">
+                <h3>Drift Hunters</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">3D drifting simulation.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/drivemad.html', 'Drive Mad')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/drivemad.png" alt="Drive Mad Icon">
+                <h3>Drive Mad</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Extreme truck driving physics.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/endoparasitic.html', 'Endoparasitic')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/endoparasitic.png" alt="Endoparasitic Icon">
+                <h3>Endoparasitic</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Body horror survival game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/escaperoad.html', 'Escape Road')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/escaperoad.png" alt="Escape Road Icon">
+                <h3>Escape Road</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Race to freedom on the highway.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/escaperoad2.html', 'Escape Road 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/escaperoad2.png" alt="Escape Road 2 Icon">
+                <h3>Escape Road 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The thrilling sequel!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fallout.html', 'Fallout')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fallout.png" alt="Fallout Icon">
+                <h3>Fallout</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Classic post-apocalyptic RPG.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/flappybird.html', 'Flappy Bird')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/flappybird.png" alt="Flappy Bird Icon">
+                <h3>Flappy Bird</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The infamous tap-to-fly game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fnaf1.html', 'FNAF 1')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fnaf1.png" alt="Five Nights at Freddy's 1 Icon">
+                <h3>FNAF 1</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The original survival horror experience.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fnaf2.html', 'FNAF 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fnaf2.png" alt="Five Nights at Freddy's 2 Icon">
+                <h3>FNAF 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">New animatronics and no doors.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fnaf3.html', 'FNAF 3')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fnaf3.png" alt="Five Nights at Freddy's 3 Icon">
+                <h3>FNAF 3</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Meet Springtrap.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fnaf4.html', 'FNAF 4')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fnaf4.png" alt="Five Nights at Freddy's 4 Icon">
+                <h3>FNAF 4</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The final chapter (original series).</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fnaf4halloween.html', 'FNAF 4 Halloween')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fnaf4halloween.png" alt="FNAF 4 Halloween Icon">
+                <h3>FNAF 4: Halloween</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Spooky seasonal update.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/footballbros.html', 'Football Bros')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/footballbros.png" alt="Football Bros Icon">
+                <h3>Football Bros</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Two-player football chaos.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/fruitninja.html', 'Fruit Ninja')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/fruitninja.png" alt="Fruit Ninja Icon">
+                <h3>Fruit Ninja</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Slice the fruit, avoid the bombs.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/geometrydash.html', 'Geometry Dash')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/geometrydash.png" alt="Geometry Dash Lite Icon">
+                <h3>Geometry Dash</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Rhythm-based platformer.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/gettingoverit.html', 'Getting Over It')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/gettingoverit.png" alt="Getting Over It Icon">
+                <h3>Getting Over It</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">A game about tremendous frustration.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/granny1.html', 'Granny 1')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/granny1.png" alt="Granny 1 Icon">
+                <h3>Granny 1</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Escape the house of Granny.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/granny2.html', 'Granny 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/granny2.png" alt="Granny 2 Icon">
+                <h3>Granny 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Now with Grandpa!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/granny3.html', 'Granny 3')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/granny3.png" alt="Granny 3 Icon">
+                <h3>Granny 3</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The third installment of the series.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/halflife.html', 'Half-Life')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/halflife.png" alt="Half-Life Icon">
+                <h3>Half-Life</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Award-winning sci-fi shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/hollowknight.html', 'Hollow Knight')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/hollowknight.png" alt="Hollow Knight Icon">
+                <h3>Hollow Knight</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Acclaimed Metroidvania adventure.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/jetpackjoyride.html', 'Jetpack Joyride')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/jetpackjoyride.png" alt="Jetpack Joyride Icon">
+                <h3>Jetpack Joyride</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Endless runner with a jetpack!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/johnnytrigger.html', 'Johnny Trigger')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/johnnytrigger.png" alt="Johnny Trigger Icon">
+                <h3>Johnny Trigger</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Stylish slow-motion shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/kindergarten.html', 'Kindergarten')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/kindergarten.png" alt="Kindergarten Icon">
+                <h3>Kindergarten</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">A dark comedy point-and-click game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/kindergarten2.html', 'Kindergarten 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/kindergarten2.png" alt="Kindergarten 2 Icon">
+                <h3>Kindergarten 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The sequel with more strange antics.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/kindergarten3.html', 'Kindergarten 3')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/kindergarten3.png" alt="Kindergarten 3 Icon">
+                <h3>Kindergarten 3</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The third chapter in the twisted school.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/learntofly.html', 'Learn to Fly')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/learntofly.png" alt="Learn to Fly Icon">
+                <h3>Learn to Fly</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Help the penguin learn to fly!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/melonplayground.html', 'Melon Playground')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/melonplayground.png" alt="Melon Playground Icon">
+                <h3>Melon Playground</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Physics sandbox fun.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/minecraft.html', 'Minecraft')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/minecraft.png" alt="Minecraft Icon">
+                <h3>Minecraft</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Block-building survival classic.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/nazizombies.html', 'Nazi Zombies')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/nazizombies.png" alt="Nazi Zombies Icon">
+                <h3>Nazi Zombies</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Portable zombie shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/ovo.html', 'OvO')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/ovo.png" alt="OvO Icon">
+                <h3>OvO</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Fast-paced precision platformer.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/ovo2.html', 'OvO 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/ovo2.png" alt="OvO 2 Icon">
+                <h3>OvO 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The challenging sequel.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/papersplease.html', 'Papers, Please')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/papersplease.png" alt="Papers, Please Icon">
+                <h3>Papers, Please</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">A dystopian document thriller.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/pixelgun.html', 'Pixel Gun Survival')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/pixelgun.png" alt="Pixel Gun Survival Icon">
+                <h3>Pixel Gun Survival</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Blocky multiplayer shooter.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/pizzeriasimulator.html', 'Pizzeria Simulator')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/pizzeriasimulator.png" alt="Pizzeria Simulator Icon">
+                <h3>Pizzeria Simulator</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Build and survive your own pizzeria.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/plantsvszombies.html', 'Plants vs Zombies')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/plantsvszombies.png" alt="Plants vs Zombies Icon">
+                <h3>Plants vs Zombies</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Defend your lawn with plants.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/plantsvszombies2.html', 'Plants vs Zombies 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/plantsvszombies2.png" alt="Plants vs Zombies 2 Icon">
+                <h3>Plants vs Zombies 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Time travel to fight more zombies.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/pokemon.html', 'Pokemon Red')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/pokemon.png" alt="Pokemon Icon">
+                <h3>Pokemon Red</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Gotta catch 'em all!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/polytrack.html', 'Poly Track')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/polytrack.png" alt="Poly Track Icon">
+                <h3>Poly Track</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Stylized 3D racing game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/raft.html', 'Raft')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/raft.png" alt="Raft Icon">
+                <h3>Raft</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Ocean survival and building.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/ragdollarchers.html', 'Ragdoll Archers')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/ragdollarchers.png" alt="Ragdoll Archers Icon">
+                <h3>Ragdoll Archers</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Wacky archery physics.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/repo.html', 'Repo')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/repo.png" alt="Repo Icon">
+                <h3>Repo</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Game coming soon!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/retrobowl.html', 'Retro Bowl')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/retrobowl.png" alt="Retro Bowl Icon">
+                <h3>Retro Bowl</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Classic 8-bit football management.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/retrobowlcollege.html', 'Retro Bowl College')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/retrobowlcollege.png" alt="Retro Bowl College Icon">
+                <h3>Retro Bowl College</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Take your team to the College Championship.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/schoolboyrunaway.html', 'Schoolboy Runaway')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/schoolboyrunaway.png" alt="Schoolboy Runaway Icon">
+                <h3>Schoolboy Runaway</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Escape the bullies and the principal.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/sisterlocation.html', 'Sister Location')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/sisterlocation.png" alt="Sister Location Icon">
+                <h3>Sister Location</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">FNAF underground experience.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/slenderman.html', 'Slender Man')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/slenderman.png" alt="Slender Man Icon">
+                <h3>Slender Man</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Collect the 8 pages.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/slimerancher.html', 'Slime Rancher')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/slimerancher.png" alt="Slime Rancher Icon">
+                <h3>Slime Rancher</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Explore a beautiful, bouncy planet.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/slitherio.html', 'Slither.io')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/slitherio.png" alt="Slither.io Icon">
+                <h3>Slither.io</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Eat, grow, and avoid others.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/slope.html', 'Slope')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/slope.png" alt="Slope Icon">
+                <h3>Slope</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Avoid obstacles in this rolling ball game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/smashkarts.html', 'Smash Karts')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/smashkarts.png" alt="Smash Karts Icon">
+                <h3>Smash Karts</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Multiplayer battle kart racing.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/snowrider.html', 'Snow Rider 3D')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/snowrider.png" alt="Snow Rider 3D Icon">
+                <h3>Snow Rider 3D</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Sleigh racing in the snow.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/stealabrainrot.html', 'Steal A Brainrot')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/stealabrainrot.png" alt="Steal A Brainrot Icon">
+                <h3>Steal A Brainrot</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Funny stealth action game.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/subwaysurfers.html', 'Subway Surfers')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/subwaysurfers.png" alt="Subway Surfers Icon">
+                <h3>Subway Surfers</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Endless runner on the train tracks.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/superhot.html', 'SUPERHOT')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/superhot.png" alt="SUPERHOT Icon">
+                <h3>SUPERHOT</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Time moves only when you move.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/supermario64.html', 'Super Mario 64')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/supermario64.png" alt="Super Mario 64 Icon">
+                <h3>Super Mario 64</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The classic 3D platformer.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/supermariobros.html', 'Super Mario Bros')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/supermariobros.png" alt="Super Mario Bros Icon">
+                <h3>Super Mario Bros</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The original 2D plumber adventure.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/survivalrace.html', 'Survival Race')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/survivalrace.png" alt="Survival Race Icon">
+                <h3>Survival Race</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Race to stay alive!</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/templerun2.html', 'Temple Run 2')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/templerun2.png" alt="Temple Run 2 Icon">
+                <h3>Temple Run 2</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">The popular endless running sequel.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/thatsnotomyneighbor.html', 'That\'s Not My Neighbor')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/thatsnotmyneighbor.png" alt="That\'s Not My Neighbor Icon">
+                <h3>That's Not My Neighbor</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Identify the doppelgänger.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/thebackrooms.html', 'The Backrooms')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/thebackrooms.png" alt="The Backrooms Icon">
+                <h3>The Backrooms</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Navigate the infinite, empty space.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/theyarecoming.html', 'They Are Coming')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/theyarecoming.png" alt="They Are Coming Icon">
+                <h3>They Are Coming</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Defend yourself against the waves.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/tinyfishing.html', 'Tiny Fishing')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/tinyfishing.png" alt="Tiny Fishing Icon">
+                <h3>Tiny Fishing</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Relaxing fishing simulator.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/tombofthemask.html', 'Tomb Of The Mask')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/tombofthemask.png" alt="Tomb Of The Mask Icon">
+                <h3>Tomb Of The Mask</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Arcade maze runner.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/ultimatecustomnight.html', 'Ultimate Custom Night')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/ultimatecustomnight.png" alt="Ultimate Custom Night Icon">
+                <h3>Ultimate Custom Night</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Customizable FNAF challenge.</p>
+            </div>
+
+            <div class="card game-card" onclick="openEmbedURL('https://jeremy4401.github.io/StudyMath/games/ultrakill.html', 'ULTRAKILL')">
+                <img src="https://jeremy4401.github.io/StudyMath/thumbnails/ultrakill.png" alt="ULTRAKILL Icon">
+                <h3>ULTRAKILL</h3>
+                <p style="font-size:0.8em; color:var(--color-text-light);">Fast-paced retro FPS action.</p>
+            </div>
+
+            </div>
+    </main>
+
+    <div id="embed-container">
+        <button id="close-button" onclick="closeEmbed()">CLOSE (X)</button>
+        <iframe id="game-iframe" frameborder="0" allowfullscreen></iframe>
     </div>
 
-    <div id="homeBtn" onclick="goHome()">🏠</div>
-
-    <div id="main">
-        <div id="homeDashboard" class="section active">
-            <h1>Home</h1>
-            <div class="homeCard">
-                <h2>Welcome to SME!</h2>
-                <p>Enjoy the festive update. To exit a game, refresh the page or click ESC.</p>
-            </div>
-
-            <div id="continuePlaying" class="homeCard">
-                <h3>Continue Playing</h3>
-                <div id="continueList" style="display:flex; gap:10px;"></div>
-            </div>
-
-            <div id="socialFeed" class="homeCard">
-                <h3>Social Feed</h3>
-                <div id="feedPosts"></div>
-                <textarea
-                    id="feedInput"
-                    placeholder="Share something..."
-                    style="width:100%;height:60px;padding:10px;border:none;border-radius:8px;background:var(--bg);color:var(--text);margin-top:10px;"
-                ></textarea>
-                <button
-                    onclick="postToFeed()"
-                    style="padding:10px;margin-top:8px;width:100%;"
-                >
-                    Post
-                </button>
-            </div>
-        </div>
-
-        <div id="games" class="section">
-            <h1>Games</h1>
-            <div id="gameList" style="display:flex; flex-wrap:wrap;"></div>
-        </div>
-        
-        <div id="favorites" class="section">
-            <h1>Favorites</h1>
-            <div id="favoriteList" style="display:flex; flex-wrap:wrap;"></div>
-        </div>
-        
-        <div id="theater" class="section">
-            <h1>Theater</h1>
-            <p>Movies and media content would be loaded here. Feature coming soon!</p>
-        </div>
-        
-        <div id="friends" class="section">
-            <h1>Friends & Messages</h1>
-            <div id="friendsContent">
-                <div id="friendsList">
-                    <h3>Friends (Simulated)</h3>
-                    <div id="friendRequests"></div>
-                    <input type="text" id="friendUsernameInput" placeholder="Friend's Username" style="width:100%;">
-                    <button onclick="sendFriendRequest()" style="width:100%;">Send Request</button>
-                    <hr style="border-color: #555; margin: 10px 0;">
-                    <div id="currentFriends"></div>
-                </div>
-                
-                <div id="chatWindow">
-                    <div id="chatDisplay" style="overflow-y:auto; flex-grow: 1; margin-bottom: 10px;">
-                        <p style="text-align: center; opacity: 0.7;" id="chatStatus">Select a friend to start chatting.</p>
-                    </div>
-                    <div id="chatInputArea" style="display:flex; align-items:center;">
-                        <input type="text" id="messageInput" placeholder="Type a message...">
-                        <button onclick="sendMessage()" style="padding: 10px 15px; white-space: nowrap;">Send</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-        
-        <div id="profile" class="section">
-            <h1>My Profile</h1>
-            <div class="homeCard">
-                <div class="profileBanner"></div>
-                <img id="profileAvatarImg" class="profileAvatar" src="" alt="Avatar"/>
-                
-                <h3 style="margin-top: 10px;">Username:</h3>
-                <input type="text" id="profileUsernameInput" onchange="saveProfile()" style="width: 300px;">
-                
-                <h3>Bio:</h3>
-                <textarea id="profileBioInput" onchange="saveProfile()" style="width: 90%; height: 80px;"></textarea>
-                
-                <h3>Profile Picture (PNG/URL):</h3>
-                <input type="url" id="profileAvatarUrlInput" onchange="saveProfile()" style="width: 90%;">
-                
-                <p>Status: <b id="profileStatus">Online</b></p>
-            </div>
-        </div>
-        
-        <div id="settingsPage" class="section">
-            <h1>Settings</h1>
-            <div id="settingsContent" class="homeCard">
-                
-                <h3>Performance</h3>
-                <label>
-                    <input type="checkbox" id="performanceMode" onchange="togglePerformanceMode()">
-                    Performance Mode (Removes animations/snow for speed)
-                </label>
-                
-                <h3 style="margin-top: 20px;">Update Settings (Simulated)</h3>
-                <label for="updateTime">Automatic Update Time:</label><br>
-                <select id="updateTime" onchange="saveSettings()" style="width: 300px;">
-                    <option value="never">Never</option>
-                    <option value="daily">Daily at 3 AM</option>
-                    <option value="weekly">Weekly</option>
-                </select>
-                
-                <h3 style="margin-top: 20px;">Data Management</h3>
-                <button onclick="exportData()">Export Data (JSON)</button>
-                <input type="file" id="importFile" accept="application/json" onchange="importData(event)" style="display:none;">
-                <button onclick="document.getElementById('importFile').click()">Import Data</button>
-                <button onclick="clearLocalStorage()">Reset All Data</button>
-
-            </div>
-        </div>
-    </div>
-
-    <div id="embedWin" style="display: none; position: fixed; inset: 0; background: #000d; z-index: 9999;">
-        <iframe id="embedFrame" style="width: 100%; height: 100%; border: none;"></iframe>
-    </div>
-
-    <div class="sme-toast" id="globalToast"></div>
-    
     <script>
-        /* ============================
-            VISUALS & AUDIO
-        ============================ */
-        function playJingle() {
-            try {
-                const jingle = document.getElementById('jingle');
-                jingle.volume = 0.3;
-                jingle.play();
-            } catch (e) {
-                console.log("Audio playback failed:", e);
+        // --- GAME EMBED FUNCTIONS ---
+        function openEmbedURL(url, title) {
+            document.getElementById('game-iframe').src = url;
+            document.getElementById('embed-container').style.display = 'block';
+            if (title) {
+                document.title = title + ' | Game Loaded';
             }
-        }
-        
-        function toggleTheme() {
-            document.body.classList.toggle("light");
-            // Save theme preference
-            localStorage.setItem('theme', document.body.classList.contains('light') ? 'light' : 'dark');
-        }
-
-        function togglePerformanceMode() {
-            const isChecked = document.getElementById('performanceMode').checked;
-            document.body.classList.toggle('performance-mode', isChecked);
-            localStorage.setItem('performanceMode', isChecked);
-            notify(`Performance Mode ${isChecked ? 'Enabled' : 'Disabled'}`, 'info');
-        }
-
-        /* ============================
-            GLOBAL NAV + BASICS
-        ============================ */
-
-        function nav(id) {
-            document.querySelectorAll(".section").forEach((s) =>
-                s.classList.remove("active")
-            );
-            const target = document.getElementById(id);
-            if (target) target.classList.add("active");
-
-            // No need for a map since H1 titles are now in the sections themselves
-
-            if (id === 'games') renderGames();
-            if (id === 'favorites') renderFavorites();
-            if (id === 'profile') renderProfile();
-            if (id === 'friends') renderFriendsSystem();
-            if (id === 'settingsPage') loadSettings();
-        }
-        
-        function goHome() {
-            nav('homeDashboard');
-            renderHome();
-        }
-
-        function panic() {
-            location.href = "https://classroom.google.com";
-        }
-
-        function enc(u) {
-            return u;
-        }
-
-        function notify(msg, type = "info") {
-            const t = document.getElementById("globalToast");
-            if (!t) return;
-            
-            t.className = "sme-toast " + type;
-            t.textContent = msg;
-            t.style.opacity = 1;
-            
-            setTimeout(() => {
-                t.style.opacity = 0;
-            }, 2500);
-        }
-
-        /* ============================
-            DATA & LOCAL STORAGE
-        ============================ */
-
-        let recent = JSON.parse(localStorage.getItem("recent") || "[]");
-        let activity = JSON.parse(localStorage.getItem("activity") || "[]");
-        let feed = JSON.parse(localStorage.getItem("feed") || "[]");
-        let favorites = JSON.parse(localStorage.getItem("favorites") || "[]");
-        let friendsData = JSON.parse(localStorage.getItem("friendsData") || JSON.stringify({
-            profiles: {
-                // Simulated User Database {username: {bio, avatar}}
-                "Admin_SME": { bio: "Launcher Creator", avatar: "https://i.imgur.com/K30VqYJ.png" },
-                "GameMaster": { bio: "Pro gamer.", avatar: "https://i.imgur.com/b2rN98B.png" },
-                "Tester101": { bio: "Testing out the new chat.", avatar: "https://i.imgur.com/n1hX6nJ.png" }
-            },
-            friends: ["Admin_SME"], // List of usernames
-            requests: [], // List of incoming request usernames
-            messages: {} // {username: [{sender: 'me'/'them', text: '...', time: '...'}]}
-        }));
-
-        let profile = JSON.parse(localStorage.getItem("profile") || JSON.stringify({
-            username: "SME User",
-            bio: "Just playing some games.",
-            status: "Online",
-            avatar: "https://i.imgur.com/1X5Rz.png", // Default avatar
-        }));
-
-        function saveData() {
-            localStorage.setItem("profile", JSON.stringify(profile));
-            localStorage.setItem("friendsData", JSON.stringify(friendsData));
-            localStorage.setItem("recent", JSON.stringify(recent));
-            localStorage.setItem("activity", JSON.stringify(activity));
-            localStorage.setItem("feed", JSON.stringify(feed));
-            localStorage.setItem("favorites", JSON.stringify(favorites));
-        }
-
-        function addRecent(name) {
-            const idx = recent.indexOf(name);
-            if (idx !== -1) recent.splice(idx, 1);
-            recent.unshift(name);
-            if (recent.length > 20) recent.pop();
-            saveData();
-        }
-        
-        function addActivity(type, detail) {
-            const entry = {
-                type,
-                detail,
-                time: new Date().toLocaleTimeString(),
-            };
-            activity.unshift(entry);
-            if (activity.length > 50) activity.pop();
-            saveData();
-        }
-
-        /* ============================
-                PROFILE & SETTINGS
-        ============================ */
-
-        function renderProfile() {
-            document.getElementById('profileUsernameInput').value = profile.username;
-            document.getElementById('profileBioInput').value = profile.bio;
-            document.getElementById('profileAvatarUrlInput').value = profile.avatar;
-            document.getElementById('profileAvatarImg').src = profile.avatar;
-            document.getElementById('profileStatus').textContent = profile.status;
-            // Update the simulated profile DB with the current user's data
-            friendsData.profiles[profile.username] = { bio: profile.bio, avatar: profile.avatar };
-            saveData();
-        }
-
-        function saveProfile() {
-            const username = document.getElementById('profileUsernameInput').value.trim();
-            const bio = document.getElementById('profileBioInput').value.trim();
-            const avatar = document.getElementById('profileAvatarUrlInput').value.trim();
-            
-            // Check for username change (important for friend list simulation)
-            if (profile.username !== username) {
-                // If the old username exists in the friendsData.profiles, delete it and use the new one
-                if(friendsData.profiles[profile.username]) {
-                    delete friendsData.profiles[profile.username];
-                }
-                profile.username = username || "SME User";
-            }
-
-            profile.bio = bio;
-            profile.avatar = avatar || "https://i.imgur.com/1X5Rz.png";
-
-            // Update local profile and re-render
-            saveData();
-            renderProfile();
-            notify("Profile updated!", "success");
-        }
-
-        function loadSettings() {
-            document.getElementById('performanceMode').checked = localStorage.getItem('performanceMode') === 'true';
-            document.getElementById('updateTime').value = localStorage.getItem('updateTime') || 'never';
-            
-            // Apply mode immediately on load
-            togglePerformanceMode(); 
-        }
-
-        function saveSettings() {
-            const updateTime = document.getElementById('updateTime').value;
-            localStorage.setItem('updateTime', updateTime);
-            notify("Settings saved.", "success");
-        }
-
-        function exportData() {
-            const data = {};
-            for (let i = 0; i < localStorage.length; i++) {
-                const key = localStorage.key(i);
-                data[key] = localStorage.getItem(key);
-            }
-            const dataStr = JSON.stringify(data, null, 2);
-            const blob = new Blob([dataStr], { type: 'application/json' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = `SME_Launcher_Backup_${new Date().toISOString().slice(0, 10)}.json`;
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(url);
-            notify("Data exported successfully!", "success");
-        }
-
-        function importData(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                try {
-                    const importedData = JSON.parse(e.target.result);
-                    if (confirm("Are you sure you want to import this data? This will overwrite your current settings and progress.")) {
-                        for (const key in importedData) {
-                            if (importedData.hasOwnProperty(key)) {
-                                localStorage.setItem(key, importedData[key]);
-                            }
-                        }
-                        location.reload();
-                    }
-                } catch (error) {
-                    notify("Error importing data. File format is invalid.", "error");
-                    console.error("Import Error:", error);
-                }
-            };
-            reader.readAsText(file);
-        }
-
-        function clearLocalStorage() {
-            if (confirm("WARNING: This will erase ALL your saved data (profile, friends, progress, settings). Are you absolutely sure?")) {
-                localStorage.clear();
-                location.reload();
-            }
-        }
-
-        /* ============================
-                FRIENDS & CHAT
-        ============================ */
-        let activeChatFriend = null;
-
-        function renderFriendsSystem() {
-            renderFriendRequests();
-            renderCurrentFriends();
-            renderChatDisplay();
-            
-            // Reset input box styles
-            document.getElementById('messageInput').style.display = 'block';
-            document.querySelector('#chatInputArea button').style.display = 'block';
-        }
-
-        function sendFriendRequest() {
-            const username = document.getElementById('friendUsernameInput').value.trim();
-            document.getElementById('friendUsernameInput').value = '';
-
-            if (username === profile.username) {
-                return notify("You can't send a request to yourself.", "error");
-            }
-            if (friendsData.friends.includes(username)) {
-                return notify(`${username} is already your friend.`, "info");
-            }
-            
-            // SIMULATION: If the user is in our simulated database
-            if (friendsData.profiles[username]) {
-                // In a real app, this sends a request to their account
-                // Here, we simulate an instant acceptance or add it as a request
-                if(Math.random() > 0.5 || friendsData.friends.length < 1) { // 50% chance of instant acceptance
-                     friendsData.friends.push(username);
-                     saveData();
-                     notify(`Friend request sent and accepted by ${username}!`, "success");
-                } else {
-                     friendsData.requests.push(username); // Simulate a pending request
-                     notify(`Friend request sent to ${username}. Waiting for acceptance...`, "info");
-                }
-            } else {
-                // In a real app, this means the user doesn't exist
-                return notify("User not found (Simulated Firebase error).", "error");
-            }
-            renderFriendsSystem();
-        }
-
-        function renderFriendRequests() {
-            const box = document.getElementById('friendRequests');
-            let html = '<h4>Pending Requests</h4>';
-            if (friendsData.requests.length === 0) {
-                html += '<p style="opacity:0.7;">No new requests.</p>';
-            } else {
-                friendsData.requests.forEach(user => {
-                    html += `
-                        <div class="friend-item">
-                            <span>${user}</span>
-                            <div>
-                                <button onclick="acceptRequest('${user}')" style="background:#4CAF50; padding: 5px 10px;">Accept</button>
-                                <button onclick="declineRequest('${user}')" style="background:#F44336; padding: 5px 10px;">Decline</button>
-                            </div>
-                        </div>
-                    `;
-                });
-            }
-            box.innerHTML = html;
-        }
-
-        function acceptRequest(user) {
-            friendsData.friends.push(user);
-            friendsData.requests = friendsData.requests.filter(u => u !== user);
-            saveData();
-            notify(`${user} is now your friend!`, "success");
-            renderFriendsSystem();
-        }
-
-        function declineRequest(user) {
-            friendsData.requests = friendsData.requests.filter(u => u !== user);
-            saveData();
-            notify(`Declined request from ${user}.`, "info");
-            renderFriendsSystem();
-        }
-
-        function renderCurrentFriends() {
-            const box = document.getElementById('currentFriends');
-            let html = '<h4>My Friends</h4>';
-            if (friendsData.friends.length === 0) {
-                html += '<p style="opacity:0.7;">You have no friends. Add someone to chat!</p>';
-            } else {
-                friendsData.friends.forEach(user => {
-                    const activeClass = activeChatFriend === user ? 'active' : '';
-                    html += `
-                        <div class="friend-item ${activeClass}" onclick="openChat('${user}')">
-                            <span>${user}</span>
-                            <button onclick="viewFriendProfile(event, '${user}')" style="background:#2196F3; padding: 5px 10px;">View</button>
-                        </div>
-                    `;
-                });
-            }
-            box.innerHTML += html;
-        }
-
-        function viewFriendProfile(event, user) {
-            event.stopPropagation(); // Stop opening chat
-            const friendProfile = friendsData.profiles[user];
-            if (!friendProfile) {
-                return notify("Error: Friend profile not found.", "error");
-            }
-            
-            alert(`
-                --- ${user}'s Profile ---
-                Username: ${user}
-                Bio: ${friendProfile.bio}
-                Status: Online (Simulated)
-                Avatar: ${friendProfile.avatar}
-            `);
-        }
-
-        function openChat(user) {
-            activeChatFriend = user;
-            renderFriendsSystem();
-            renderChatDisplay();
-        }
-
-        function renderChatDisplay() {
-            const display = document.getElementById('chatDisplay');
-            if (friendsData.friends.length === 0) {
-                 display.innerHTML = '<p style="text-align: center; color: var(--accent);">Cant send messages. Add friends first.</p>';
-                 // Hide input when no friends
-                 document.getElementById('messageInput').style.display = 'none';
-                 document.querySelector('#chatInputArea button').style.display = 'none';
-                 return;
-            }
-
-            if (!activeChatFriend) {
-                display.innerHTML = '<p style="text-align: center; opacity: 0.7;">Select a friend to start chatting.</p>';
-                document.getElementById('messageInput').style.display = 'none';
-                document.querySelector('#chatInputArea button').style.display = 'none';
-                return;
-            }
-            
-            document.getElementById('messageInput').style.display = 'block';
-            document.querySelector('#chatInputArea button').style.display = 'block';
-
-            if (!friendsData.messages[activeChatFriend]) {
-                friendsData.messages[activeChatFriend] = [];
-            }
-            
-            let html = '';
-            friendsData.messages[activeChatFriend].forEach(msg => {
-                const type = msg.sender === profile.username ? 'me' : 'them';
-                html += `
-                    <div class="chat-message ${type}">
-                        <span style="font-weight: bold;">${msg.sender}:</span> ${msg.text}
-                        <div style="font-size: 10px; opacity: 0.6; text-align: right;">${msg.time}</div>
-                    </div>
-                `;
-            });
-            display.innerHTML = html;
-            display.scrollTop = display.scrollHeight; // Scroll to bottom
-        }
-
-        function sendMessage() {
-            const input = document.getElementById('messageInput');
-            const text = input.value.trim();
-            
-            if (!activeChatFriend || !text) return;
-
-            const newMsg = {
-                sender: profile.username,
-                text: text,
-                time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-            };
-
-            // Add to chat history
-            friendsData.messages[activeChatFriend].push(newMsg);
-            
-            // SIMULATION: Simulate a delayed response from the friend
-            setTimeout(() => {
-                const autoResponse = {
-                    sender: activeChatFriend,
-                    text: `(Auto-reply) Got your message! Currently busy playing ${games[Math.floor(Math.random() * games.length)].name}. Brb!`,
-                    time: new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })
-                };
-                friendsData.messages[activeChatFriend].push(autoResponse);
-                saveData();
-                renderChatDisplay();
-            }, 1000);
-
-            input.value = '';
-            saveData();
-            renderChatDisplay();
-        }
-
-        /* ============================
-                HOME RENDER (Simplified)
-        ============================ */
-
-        function renderContinuePlaying() {
-            const box = document.getElementById("continueList");
-            if (!box) return;
-
-            if (recent.length === 0) {
-                box.innerHTML = "<p>No recent games.</p>";
-                return;
-            }
-
-            box.innerHTML = "";
-            recent.slice(0, 3).forEach((name) => {
-                const g = games.find((x) => x.name === name);
-                if (!g) return;
-                // Simplified card for recent list
-                box.innerHTML += `
-                    <div class="card" style="width:150px; height: 200px; margin: 0 5px;" onclick="showGameModal('${g.name}')">
-                        <img src="${g.img}" alt="${g.name}" style="max-height: 120px;">
-                        <div style="font-size:14px;text-align:center;">${g.name}</div>
-                    </div>
-                `;
-            });
-        }
-        
-        // ... (renderFeed, renderActivityHome functions remain the same as previous full code, 
-        // using the data structures already established) ...
-
-        function renderHome() {
-            renderContinuePlaying();
-            // renderFeed(); // Re-enable if the full post/like/comment logic is needed
-            // renderActivityHome(); // Re-enable if activity log is needed
-        }
-
-
-        /* ============================
-                        GAMES (Unchanged data)
-        ============================ */
-
-        let games = [
-            { name: "Water (Password is funni)", img: "thumbnails/water.png", url: "https://cgxlyxnlynjpbmdiywnrc3RhcnRtewvkdwnhdglvbml0d2Fzc29zawdtv2.familyguy.in/signin.html", cat: "Action", desc: "A great unblocked version of an old favorite." },
-            { name: "3D Tuning", img: "thumbnails/3dtuning.png", url: "https://www.3dtuning.com/en-US/", cat: "Action", desc: "Customize cars in 3D." },
-            { name: "Slime Rancher", img: "thumbnails/slimerancher.png", url: "https://jeremy4401.github.io/SME/games/slimerancher.html", cat: "Action", desc: "Explore a world and farm slimes!" },
-            { name: "Jacksmith", img: "thumbnails/jacksmith.png", url: "https://jeremy4401.github.io/jacksmith/", cat: "Action", desc: "Forge weapons for your heroes." },
-            { name: "Mario Kart", img: "thumbnails/mariokart.png", url: "https://turbowarp.org/581185386/embed", cat: "Action", desc: "Race with Mario and friends." },
-            { name: "Lego Star Wars Trilogy", img: "thumbnails/starwars.png", url: "https://realtherealer.github.io/GBA/launcher.html#lsw", cat: "Action", desc: "Experience the original trilogy in Lego form." },
-            { name: "Minecraft", img: "thumbnails/minecraft.png", url: "https://jeremy4401.github.io/SME/games/minecraft.html", cat: "Survival", desc: "Explore, mine, build, and survive." },
-            { name: "Buckshot Roulette", img: "thumbnails/buckshotroulette.png", url: "https://jeremy4401.github.io/SME/games/buckshotroulette.html", cat: "Horror", desc: "A deadly game of chance." },
-            { name: "Schoolboy Runaway", img: "thumbnails/schoolboyrunaway.png", url: "https://jeremy4401.github.io/SME/games/schoolboyrunaway.html", cat: "Survival", desc: "Escape the school!" },
-            { name: "Hollow Knight", img: "thumbnails/hollowknight.png", url: "https://jeremy4401.github.io/SME/games/hollowknight.html", cat: "Action", desc: "A beautiful 2D action-adventure." },
-            { name: "10 Minutes Till Dawn", img: "thumbnails/10minutestilldawn.png", url: "https://jeremy4401.github.io/SME/games/10minutestilldawn.html", cat: "Action", desc: "Survive waves of enemies until dawn." },
-            { name: "1v1.LOL", img: "thumbnails/1v1lol.png", url: "https://jeremy4401.github.io/SME/games/1v1lol.html", cat: "Action", desc: "Build and fight against others." },
-            { name: "Amanda the Adventurer", img: "thumbnails/amandatheadventurer.png", url: "https://jeremy4401.github.io/SME/games/amandatheadventurer.html", cat: "Horror", desc: "A horror game disguised as a children's show." },
-            { name: "Baseball Bros", img: "thumbnails/baseballbros.png", url: "https://Jeremy4401.github.io/SME/games/baseballbros.html", cat: "Sports", desc: "Hit home runs!" },
-            { name: "Basket Bros", img: "thumbnails/basketbros.png", url: "https://Jeremy4401.github.io/SME/games/basketbros.html", cat: "Sports", desc: "Arcade basketball fun." },
-            { name: "Football Bros", img: "thumbnails/footballbros.png", url: "https://Jeremy4401.github.io/SME/games/footballbros.html", cat: "Sports", desc: "Fast-paced football action." },
-            { name: "Escape Road", img: "thumbnails/escaperoad.png", url: "https://Jeremy4401.github.io/SME/games/escaperoad.html", cat: "Racing", desc: "Drive to escape the chase." },
-            { name: "Fallout", img: "thumbnails/fallout.png", url: "https://Jeremy4401.github.io/SME/games/fallout.html", cat: "RPG", desc: "Explore the post-apocalyptic wasteland." },
-            { name: "Flappy Bird", img: "thumbnails/flappybird.png", url: "https://Jeremy4401.github.io/SME/games/flappybird.html", cat: "Arcade", desc: "The classic infuriating tapping game." },
-            { name: "FNAF 1", img: "thumbnails/fnaf1.png", url: "https://Jeremy4401.github.io/SME/games/fnaf1.html", cat: "Horror", desc: "Survive five nights at Freddy Fazbear's Pizza." },
-            { name: "FNAF 2", img: "thumbnails/fnaf2.png", url: "https://Jeremy4401.github.io/SME/games/fnaf2.html", cat: "Horror", desc: "The sequel with new animatronics." },
-            { name: "FNAF 3", img: "thumbnails/fnaf3.png", url: "https://Jeremy4401.github.io/SME/games/fnaf3.html", cat: "Horror", desc: "30 years later, the horror returns." },
-            { name: "FNAF 4", img: "thumbnails/fnaf4.png", url: "https://Jeremy4401.github.io/SME/games/fnaf4.html", cat: "Horror", desc: "The final chapter, played from a child's bedroom." },
-            { name: "FNAF 4 Halloween Edition", img: "thumbnails/fnaf4halloween.png", url: "https://Jeremy4401.github.io/SME/games/fnaf4halloween.html", cat: "Horror", desc: "A spooky update to FNAF 4." },
-            { name: "Sister Location", img: "thumbnails/sisterlocation.png", url: "https://Jeremy4401.github.io/SME/games/sisterlocation.html", cat: "Horror", desc: "Welcome to Circus Baby's Pizza World." },
-            { name: "Freddy Fazbear's Pizzeria Simulator", img: "thumbnails/pizzeriasimulator.png", url: "https://Jeremy4401.github.io/SME/games/pizzeriasimulator.html", cat: "Horror", desc: "Build your own pizzeria... and survive." },
-            { name: "Ultimate Custom Night", img: "thumbnails/ultimatecustomnight.png", url: "https://Jeremy4401.github.io/SME/games/ultimatecustomnight.html", cat: "Horror", desc: "The ultimate FNAF mashup challenge." },
-            { name: "Endoparasitic", img: "thumbnails/endoparasitic.png", url: "https://Jeremy4401.github.io/SME/games/endoparasitic.html", cat: "Horror", desc: "Sci-fi horror with a nasty infection." },
-            { name: "Drive Mad", img: "thumbnails/drivemad.png", url: "https://Jeremy4401.github.io/SME/games/drivemad.html", cat: "Racing", desc: "A challenging physics-based driving game." },
-            { name: "Drift Hunters", img: "thumbnails/drifthunters.png", url: "https://Jeremy4401.github.io/SME/games/drifthunters.html", cat: "Racing", desc: "High-speed drifting simulator." },
-            { name: "The Binding of Isaac", img: "thumbnails/bindingofisaac.png", url: "https://Jeremy4401.github.io/SME/games/bindingofisaac.html", cat: "Roguelike", desc: "A dark, action-packed dungeon crawler." },
-            { name: "DOOM", img: "thumbnails/doom.png", url: "https://Jeremy4401.github.io/SME/games/doom.html", cat: "Shooter", desc: "The classic demon-slaying shooter." },
-            { name: "DOOM 2", img: "thumbnails/doom2.png", url: "https://Jeremy4401.github.io/SME/games/doom2.html", cat: "Shooter", desc: "Hell on Earth." },
-            { name: "Fruit Ninja", img: "thumbnails/fruitninja.png", url: "https://Jeremy4401.github.io/SME/games/fruitninja.html", cat: "Arcade", desc: "Slice and dice fruit." },
-            { name: "Geometry Dash", img: "thumbnails/geometrydash.png", url: "https://Jeremy4401.github.io/SME/games/geometrydash.html", cat: "Rhythm", desc: "Rhythm-based platforming." },
-            { name: "Getting Over It", img: "thumbnails/gettingoverit.png", url: "https://Jeremy4401.github.io/SME/games/gettingoverit.html", cat: "Challenging", desc: "The notorious game of falling down." },
-            { name: "Granny", img: "thumbnails/granny1.png", url: "https://Jeremy4401.github.io/SME/games/granny1.html", cat: "Horror", desc: "Escape the terrifying house." },
-            { name: "Granny Chapter 2", img: "thumbnails/granny2.png", url: "https://Jeremy4401.github.io/SME/games/granny2.html", cat: "Horror", desc: "Granny and Grandpa join the chase." },
-            { name: "Granny Chapter 3", img: "thumbnails/granny3.png", url: "https://Jeremy4401.github.io/SME/games/granny3.html", cat: "Horror", desc: "A new location and more terror." },
-            { name: "Controlled Flight", img: "thumbnails/controlledflight.png", url: "https://howthingsfly.si.edu/sites/default/files/unity/ControlledFlight_new/index.html", cat: "Simulation", desc: "Learn to fly a plane." },
-            { name: "Jetpack Joyride", img: "thumbnails/jetpackjoyride.png", url: "https://Jeremy4401.github.io/SME/games/jetpackjoyride.html", cat: "Arcade", desc: "Blast off with a machine gun jetpack!" },
-            { name: "Johnny Trigger", img: "thumbnails/johnnytrigger.png", url: "https://Jeremy4401.github.io/SME/games/johnnytrigger.html", cat: "Shooter", desc: "Slow-motion bullet-dodging fun." },
-            { name: "Kindergarten", img: "thumbnails/kindergarten.png", url: "https://jeremy4401.github.io/SME/games/kindergarten.html", cat: "Adventure", desc: "Survive a weird day at Kindergarten." },
-            { name: "Kindergarten 2", img: "thumbnails/kindergarten2.png", url: "https://jeremy4401.github.io/SME/games/kindergarten2.html", cat: "Adventure", desc: "The sequel to the bizarre school adventure." },
-            { name: "Kindergarten 3", img: "thumbnails/kindergarten3.png", url: "https://jeremy4401.github.io/SME/games/kindergarten3.html", cat: "Adventure", desc: "More madness in the classroom." },
-            { name: "Learn to Fly", img: "thumbnails/learntofly.png", url: "https://Jeremy4401.github.io/SME/games/learntofly.html", cat: "Arcade", desc: "Help a penguin learn to fly." },
-            { name: "Melon Playground", img: "thumbnails/melonplayground.png", url: "https://Jeremy4401.github.io/SME/games/melonplayground.html", cat: "Sandbox", desc: "A fun physics sandbox." },
-            { name: "Doodle Jump", img: "thumbnails/doodlejump.png", url: "https://Jeremy4401.github.io/SME/games/doodlejump.html", cat: "Arcade", desc: "Jump your way up endless platforms." },
-            { name: "Nazi Zombies Portable", img: "thumbnails/nazizombies.png", url: "https://Jeremy4401.github.io/SME/games/nazizombies.html", cat: "Shooter", desc: "Classic zombie survival." },
-            { name: "Papers, Please", img: "thumbnails/papersplease.png", url: "https://Jeremy4401.github.io/SME/games/papersplease.html", cat: "Simulation", desc: "A dystopian document thriller." },
-            { name: "Pixel Gun 3D", img: "thumbnails/pixelgun.png", url: "https://Jeremy4401.github.io/SME/games/pixelgun.html", cat: "Shooter", desc: "Pixelated online FPS action." },
-            { name: "Plants vs Zombies", img: "thumbnails/plantsvszombies.png", url: "https://Jeremy4401.github.io/SME/games/plantsvszombies.html", cat: "Strategy", desc: "Defend your home with plants." },
-            { name: "Plants vs Zombies 2 Gardenless", img: "thumbnails/plantsvszombies2.png", url: "https://Jeremy4401.github.io/SME/games/plantsvszombies2.html", cat: "Strategy", desc: "A classic tower defense game." },
-            { name: "Pokemon", img: "thumbnails/pokemon.png", url: "https://Jeremy4401.github.io/SME/games/pokemon.html", cat: "RPG", desc: "Catch 'em all!" },
-            { name: "Raft", img: "thumbnails/raft.png", url: "https://Jeremy4401.github.io/SME/games/raft.html", cat: "Survival", desc: "Survive on a raft in the ocean." },
-            { name: "Ragdoll Archers", img: "thumbnails/ragdollarchers.png", url: "https://Jeremy4401.github.io/SME/games/ragdollarchers.html", cat: "Action", desc: "Physics-based archery battles." },
-            { name: "Two Player Battle", img: "thumbnails/2playerbattle.png", url: "https://turbowarp.org/292728003/embed", cat: "Action", desc: "Fun local 2-player game." },
-            { name: "Retro Bowl", img: "thumbnails/retrobowl.png", url: "https://Jeremy4401.github.io/SME/games/retrobowl.html", cat: "Sports", desc: "A retro-style football management game." },
-            { name: "Retro Bowl College", img: "thumbnails/retrobowlcollege.png", url: "https://Jeremy4401.github.io/SME/games/retrobowlcollege.html", cat: "Sports", desc: "College football management." },
-            { name: "Slither.io", img: "thumbnails/slitherio.png", url: "https://Jeremy4401.github.io/SME/games/slitherio.html", cat: "Multiplayer", desc: "Grow your snake in this classic io game." },
-            { name: "Slope", img: "thumbnails/slope.png", url: "https://Jeremy4401.github.io/SME/games/slope.html", cat: "Racing", desc: "Roll down the slope and avoid obstacles." },
-            { name: "Smash Karts", img: "thumbnails/smashkarts.png", url: "https://Jeremy4401.github.io/SME/games/smashkarts.html", cat: "Multiplayer", desc: "Multiplayer kart combat." },
-            { name: "Snow Rider 3D", img: "thumbnails/snowrider.png", url: "https://Jeremy4401.github.io/SME/games/snowrider.html", cat: "Racing", desc: "Ride your sled down a snowy track." },
-            { name: "Steal a Brainrot", img: "thumbnails/stealabrainrot.png", url: "https://Jeremy4401.github.io/SME/games/stealabrainrot.html", cat: "Arcade", desc: "A weird, fast-paced game." },
-            { name: "Subway Surfers", img: "thumbnails/subwaysurfers.png", url: "https://Jeremy4401.github.io/SME/games/subwaysurfers.html", cat: "Arcade", desc: "Run and dodge trains." },
-            { name: "SUPERHOT", img: "thumbnails/superhot.png", url: "https://Jeremy4401.github.io/SME/games/superhot.html", cat: "Shooter", desc: "Time moves only when you move." },
-            { name: "Super Mario 64", img: "thumbnails/supermario64.png", url: "https://Jeremy4401.github.io/SME/games/supermario64.html", cat: "Platformer", desc: "The classic 3D adventure." },
-            { name: "Super Mario Bros", img: "thumbnails/supermariobros.png", url: "https://Jeremy4401.github.io/SME/games/supermariobros.html", cat: "Platformer", desc: "The original side-scroller." },
-            { name: "Survival Race", img: "thumbnails/survivalrace.png", url: "https://Jeremy4401.github.io/SME/games/survivalrace.html", cat: "Racing", desc: "A race for survival." },
-            { name: "Temple Run 2", img: "thumbnails/templerun2.png", url: "https://Jeremy4401.github.io/SME/games/templerun2.html", cat: "Arcade", desc: "Run from the demon monkeys." },
-            { name: "They are Coming", img: "thumbnails/theyarecoming.png", url: "https://Jeremy4401.github.io/SME/games/theyarecoming.html", cat: "Shooter", desc: "Shoot the approaching enemies." },
-            { name: "Baldi's Basics", img: "thumbnails/baldisbasics.png", url: "https://Jeremy4401.github.io/SME/games/baldisbasics.html", cat: "Horror", desc: "Collect notebooks and escape Baldi." },
-            { name: "Tiny Fishing", img: "thumbnails/tinyfishing.png", url: "https://Jeremy4401.github.io/SME/games/tinyfishing.html", cat: "Casual", desc: "Cast your line and catch fish." },
-            { name: "Tomb of the Mask", img: "thumbnails/tombofthemask.png", url: "https://Jeremy4401.github.io/SME/games/tombofthemask.html", cat: "Arcade", desc: "Fast-paced maze runner." },
-            { name: "Cut the Rope", img: "thumbnails/cuttherope.png", url: "https://Jeremy4401.github.io/SME/games/cuttherope.html", cat: "Puzzle", desc: "Physics-based puzzle fun." },
-            { name: "Crossy Road", img: "thumbnails/crossyroad.png", url: "https://Jeremy4401.github.io/SME/games/crossyroad.html", cat: "Arcade", desc: "Cross the road without getting hit." },
-            { name: "Cookie Clicker", img: "thumbnails/cookieclicker.png", url: "https://Jeremy4401.github.io/SME/games/cookieclicker.html", cat: "Idle", desc: "The classic incremental game." },
-            { name: "Buildnow GG", img: "thumbnails/buildnow.png", url: "https://Jeremy4401.github.io/SME/games/buildnow.html", cat: "Shooter", desc: "Build and fight online." },
-            { name: "Bouncemasters", img: "thumbnails/bouncemasters.png", url: "https://Jeremy4401.github.io/SME/games/bouncemasters.html", cat: "Arcade", desc: "Launch a penguin as far as you can." },
-            { name: "Bitlife", img: "thumbnails/bitlife.png", url: "https://Jeremy4401.github.io/SME/games/bitlife.html", cat: "Simulation", desc: "Live your life, one text choice at a time." },
-            { name: "Bank Robbery 2", img: "thumbnails/bankrobbery2.png", url: "https://jeremy4401.github.io/SME/games/bankrobbery2.html", cat: "Action", desc: "Plan and execute a bank heist." },
-            { name: "Basket Random", img: "thumbnails/basketrandom.png", url: "https://jeremy4401.github.io/SME/games/basketrandom.html", cat: "Sports", desc: "Hilarous physics-based basketball." },
-            { name: "ULTRAKILL", img: "thumbnails/ultrakill.png", url: "https://jeremy4401.github.io/SME/games/ultrakill.html", cat: "Shooter", desc: "High-octane retro FPS." },
-            { name: "Bendy & The Ink Machine", img: "thumbnails/bendy.png", url: "https://jeremy4401.github.io/SME/games/bendy.html", cat: "Horror", desc: "Cartoon horror in an old studio." },
-            { name: "Cuphead", img: "thumbnails/cuphead.png", url: "https://jeremy4401.github.io/SME/games/cuphead.html", cat: "Platformer", desc: "A challenging run-and-gun game." },
-            { name: "Half Life", img: "thumbnails/halflife.png", url: "https://jeremy4401.github.io/SME/games/halflife.html", cat: "Shooter", desc: "The revolutionary sci-fi FPS." },
-            { name: "R.E.P.O.", img: "thumbnails/repo.png", url: "https://jeremy4401.github.io/SME/games/repo.html", cat: "Action", desc: "A retro pixel action game." },
-            { name: "Bad Parenting", img: "thumbnails/badparenting.png", url: "https://jeremy4401.github.io/SME/games/badparenting.html", cat: "Horror", desc: "Survive a scary home environment." }
-        ];
-        
-        // ... (renderGameCard, renderGames, renderFavorites, showGameModal, closeGameModal, launchGame, closeEmbed, and keydown listener functions remain the same) ...
-
-        function renderGameCard(g) {
-            const favClass = isFavorite(g.name) ? 'fav' : '';
-            return `
-                <div class="card" onclick="showGameModal('${g.name}')">
-                    <span class="star ${favClass}" onclick="event.stopPropagation(); toggleFavorite('${g.name}')">⭐</span>
-                    <img src="${g.img}" alt="${g.name}">
-                    <div style="text-align:center;">
-                        <strong>${g.name}</strong><br>
-                        <span style="font-size: 12px; opacity: 0.7;">${g.cat}</span>
-                    </div>
-                </div>
-            `;
-        }
-
-        function isFavorite(name) {
-            return favorites.includes(name);
-        }
-
-        function toggleFavorite(name) {
-            const index = favorites.indexOf(name);
-            if (index > -1) {
-                favorites.splice(index, 1);
-                notify(`${name} removed from favorites.`, 'info');
-            } else {
-                favorites.unshift(name);
-                notify(`${name} added to favorites!`, 'success');
-            }
-            saveData();
-            
-            if (document.getElementById('games').classList.contains('active')) {
-                renderGames();
-            } else if (document.getElementById('favorites').classList.contains('active')) {
-                renderFavorites();
-            }
-        }
-
-        function renderGames() {
-            const box = document.getElementById("gameList");
-            if (!box) return;
-            box.innerHTML = games.map(renderGameCard).join('');
-        }
-
-        function renderFavorites() {
-            const box = document.getElementById("favoriteList");
-            if (!box) return;
-
-            const favoriteGames = games.filter(g => isFavorite(g.name));
-
-            if (favoriteGames.length === 0) {
-                box.innerHTML = "<p>You haven't added any favorites yet.</p>";
-                return;
-            }
-            box.innerHTML = favoriteGames.map(renderGameCard).join('');
-        }
-
-        let activeGame = null;
-
-        function showGameModal(gameName) {
-            const game = games.find(g => g.name === gameName);
-            if (!game) return;
-
-            activeGame = game;
-            
-            document.getElementById('modalTitle').textContent = game.name;
-            document.getElementById('modalDesc').textContent = game.desc || "No description available.";
-            document.getElementById('modalImg').src = game.img;
-
-            const isRecent = recent.includes(game.name);
-            document.getElementById('playtimeBox').innerHTML = isRecent ? 
-                '<p style="color:var(--accent);">You recently played this!</p>' : '';
-            
-            document.getElementById('playBtn').onclick = () => launchGame(game.name);
-
-            document.getElementById('gameModal').style.display = 'flex';
-        }
-        
-        function closeGameModal() {
-            document.getElementById('gameModal').style.display = 'none';
-            activeGame = null;
-        }
-
-        function launchGame(gameName) {
-            const game = games.find(g => g.name === gameName);
-            if (!game) return;
-
-            closeGameModal(); 
-            
-            const embedWin = document.getElementById('embedWin');
-            const embedFrame = document.getElementById('embedFrame');
-
-            embedFrame.src = enc(game.url);
-            embedWin.style.display = 'block';
-            document.body.style.overflow = 'hidden'; 
-
-            addRecent(game.name);
-            addActivity('Played Game', `Started playing ${game.name}`);
         }
 
         function closeEmbed() {
-            const embedWin = document.getElementById('embedWin');
-            const embedFrame = document.getElementById('embedFrame');
-            
-            embedFrame.src = ''; 
-            embedWin.style.display = 'none';
-            document.body.style.overflow = 'auto'; 
-
-            if (activeGame) {
-                addActivity('Finished Game', `Finished playing ${activeGame.name}`);
-                activeGame = null;
-            }
-            renderHome(); 
+            document.getElementById('game-iframe').src = '';
+            document.getElementById('embed-container').style.display = 'none';
+            document.title = '🎄 StudyMath Game Library 🎅'; 
         }
 
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && document.getElementById('embedWin').style.display === 'block') {
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
                 closeEmbed();
             }
         });
 
-        document.addEventListener('DOMContentLoaded', () => {
-            if (localStorage.getItem('theme') === 'light') {
-                document.body.classList.add('light');
+        // --- VISUAL EFFECTS GENERATION ---
+        
+        function createFallingElements(containerId, elementType, className, count, minSize, maxSize, minDuration, maxDuration, content = null) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+
+            for (let i = 0; i < count; i++) {
+                const element = document.createElement(elementType);
+                element.className = className;
+                
+                if (content) {
+                    element.textContent = content;
+                } else {
+                    const size = Math.random() * (maxSize - minSize) + minSize;
+                    element.style.width = `${size}px`;
+                    element.style.height = `${size}px`;
+                }
+
+                element.style.left = `${Math.random() * 100}vw`;
+                element.style.animationDuration = `${Math.random() * (maxDuration - minDuration) + minDuration}s`;
+                element.style.animationDelay = `${Math.random() * maxDuration}s`;
+
+                container.appendChild(element);
             }
-            loadSettings(); // Load settings (incl. performance mode)
-            renderProfile(); // Initial load for profile inputs
-            renderHome(); 
-        });
+        }
+
+        // Create Snowflakes (100 elements)
+        createFallingElements('snow-container', 'div', 'flake', 100, 2, 5, 10, 30);
+
+        // Create Jingle Bells (15 elements)
+        createFallingElements('bell-container', 'span', 'bell', 15, 0, 0, 8, 20, '🔔');
+        
     </script>
+
 </body>
 </html>

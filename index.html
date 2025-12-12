@@ -305,7 +305,7 @@
         #close-button {
             position: absolute;
             top: 15px;
-right: 30px;
+            right: 30px;
             background: var(--color-primary);
             color: white;
             border: none;
@@ -781,30 +781,7 @@ right: 30px;
 
             <h2 class="section-title" style="border-bottom-color: var(--color-secondary);">Friends Status</h2>
             <div class="content-row" id="home-friends-list">
-                <div class="friend-card" onclick="viewOtherProfile('GamerPro')">
-                    <div class="friend-status">
-                        <div class="status-dot" style="background-color: var(--status-online);"></div>
-                        <span class="friend-status-text">Online</span>
-                    </div>
-                    <span class="friend-username">GamerPro</span>
-                    <p class="friend-on-what">Playing: Drive Mad</p>
-                </div>
-                <div class="friend-card" onclick="viewOtherProfile('StudySavant')">
-                    <div class="friend-status">
-                        <div class="status-dot" style="background-color: var(--status-dnd);"></div>
-                        <span class="friend-status-text">Do Not Disturb</span>
-                    </div>
-                    <span class="friend-username">StudySavant</span>
-                    <p class="friend-on-what">Status: Studying Math</p>
-                </div>
-                <div class="friend-card" onclick="viewOtherProfile('QuietUser')">
-                    <div class="friend-status">
-                        <div class="status-dot" style="background-color: var(--status-offline);"></div>
-                        <span class="friend-status-text">Offline</span>
-                    </div>
-                    <span class="friend-username">QuietUser</span>
-                    <p class="friend-on-what">Last seen: 2 days ago</p>
-                </div>
+                <p style="color: var(--color-text-light); padding: 10px;">Connect Firebase Authentication and Firestore/RTDB to load real friend status here.</p>
             </div>
         </div>
         
@@ -1005,38 +982,16 @@ right: 30px;
             <div class="friends-message-list">
                 <h2 class="section-title" style="margin-top: 0; padding-top: 20px; border-bottom: 3px solid var(--color-primary);">Chats & Messages</h2>
                 
-                <div class="message-thread-preview" onclick="openChat('gamerpro')">
-                    <div class="thread-pfp"><img src="https://via.placeholder.com/50x50.png?text=GP" alt="GamerPro PFP"></div>
-                    <div class="thread-info">
-                        <h4>GamerPro <span style="font-weight: 400; font-size: 0.8em; color: var(--color-text-light); float: right;">10:30 AM</span></h4>
-                        <p>Hey, want to try the new 1v1.LOL map?</p>
-                    </div>
-                </div>
-                
-                <div class="message-thread-preview" onclick="openChat('studysavant')">
-                    <div class="thread-pfp"><img src="https://via.placeholder.com/50x50.png?text=SS" alt="StudySavant PFP"></div>
-                    <div class="thread-info">
-                        <h4>StudySavant <span style="font-weight: 400; font-size: 0.8em; color: var(--color-text-light); float: right;">Yesterday</span></h4>
-                        <p>Finished the assignment, thanks for the help!</p>
-                    </div>
-                </div>
-
-                <p id="no-chats-message" style="color: var(--color-text-light); font-style: italic; text-align: center; margin-top: 50px; display: none;">No current active chats. Start a conversation from the Online Friends list!</p>
+                <p id="no-chats-message" style="color: var(--color-text-light); font-style: italic; text-align: center; margin-top: 50px;">
+                    No active chats. Log in with Firebase Authentication and start a conversation from the Online Friends list!
+                </p>
             </div>
 
             <div class="friends-online-sidebar">
                 <h3>Online Friends</h3>
                 <div id="online-friends-list">
-                    <div class="online-friend-item" onclick="openChat('gamerpro')">
-                        <div class="online-pfp"><img src="https://via.placeholder.com/35x35.png?text=GP" alt="PFP"><div class="online-dot"></div></div>
-                        <span class="online-username">GamerPro</span>
-                    </div>
-                    <div class="online-friend-item" onclick="openChat('coderkid')">
-                        <div class="online-pfp"><img src="https://via.placeholder.com/35x35.png?text=CK" alt="PFP"><div class="online-dot"></div></div>
-                        <span class="online-username">CoderKid</span>
-                    </div>
                     <p id="empty-friends-placeholder" class="empty-state">
-                        You haven't added any friends yet or no one is online.
+                        You haven't added any friends yet or no one is currently online.
                     </p>
                 </div>
             </div>
@@ -1100,12 +1055,14 @@ right: 30px;
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-app.js";
     import { getDatabase, ref as dbRef, set, get } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-database.js";
     import { getStorage, ref as storageRef, uploadBytesResumable, getDownloadURL } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-storage.js";
+    // NOTE: You will need to add Firebase Auth and Firestore/RTDB imports here for the real chat system.
+    // e.g., import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.3/firebase-auth.js";
 
     // Your web app's Firebase configuration
     const firebaseConfig = {
         apiKey: "AIzaSyBxXsXA1aoOLzDD-yNaZnHETgxPAJ-mbjw",
         authDomain: "sme-loader.firebaseapp.com",
-        databaseURL: "https://sme-loader-default-rtdb.firebaseio.com",
+        databaseURL: "https://sme-loader-default-rtb.firebaseio.com",
         projectId: "sme-loader",
         storageBucket: "sme-loader.firebasestorage.app",
         messagingSenderId: "427113600756",
@@ -1117,9 +1074,10 @@ right: 30px;
     const db = getDatabase(app);
     const storage = getStorage(app);
 
-    // Placeholder User ID (for saving PFP and settings data)
+    // Placeholder User ID (THIS WILL BE REPLACED BY FIREBASE AUTH)
     const CURRENT_USER_ID = "guest_user_12345"; 
-    const CURRENT_USERNAME = "CurrentUser";
+    const CURRENT_USERNAME = "Current User"; // This should load from Firebase Profile later
+
 
     // =======================================================
     // [B] CORE NAVIGATION & UTILITY FUNCTIONS
@@ -1132,7 +1090,7 @@ right: 30px;
     window.openEmbedURL = openEmbedURL;
     window.closeEmbed = closeEmbed;
     window.toggleFavorite = toggleFavorite;
-    window.openChat = openChat; // Added for Friends page chat simulation
+    window.openChat = openChat; 
     window.triggerPanic = triggerPanic;
     window.launchProxy = launchProxy;
     window.togglePerformanceMode = togglePerformanceMode;
@@ -1155,7 +1113,7 @@ right: 30px;
 
         if (pageId === 'friends') {
             document.body.style.paddingRight = 'var(--friends-sidebar-width)';
-            loadOnlineFriends();
+            loadOnlineFriends(); // Call function to load REAL friends (or show empty state)
         } else {
             document.body.style.paddingRight = '0';
         }
@@ -1205,7 +1163,7 @@ right: 30px;
 
 
     // =======================================================
-    // [C] GAME & FAVORITES LOGIC
+    // [C] GAME & FAVORITES LOGIC (NO CHANGE)
     // =======================================================
 
     let favorites = JSON.parse(localStorage.getItem('favorites')) || {};
@@ -1379,43 +1337,39 @@ right: 30px;
 
 
     // =======================================================
-    // [E] FRIENDS PAGE LOGIC (Dummy Data for UI)
+    // [E] FRIENDS PAGE LOGIC (NO DUMMY DATA)
     // =======================================================
-    const dummyOnlineFriends = [
-        { id: 'gamerpro', username: 'GamerPro', status: 'Online', pfp: 'https://via.placeholder.com/35x35.png?text=GP' },
-        { id: 'coderkid', username: 'CoderKid', status: 'Online', pfp: 'https://via.placeholder.com/35x35.png?text=CK' },
-        { id: 'studybuddy', username: 'StudyBuddy', status: 'Online', pfp: 'https://via.placeholder.com/35x35.png?text=SB' },
-        { id: 'longnamefriendonline', username: 'L.N.FriendOnline', status: 'Online', pfp: 'https://via.placeholder.com/35x35.png?text=LN' }
-    ];
+    
+    // THIS ARRAY IS NOW BLANK. YOU MUST POPULATE IT USING FIREBASE AUTH AND FIRESTORE/RTDB
+    const onlineFriendsFromDatabase = []; 
     
     function loadOnlineFriends() {
         const list = document.getElementById('online-friends-list');
-        // Keep the placeholder if no friends are online
         const placeholder = document.getElementById('empty-friends-placeholder');
         
-        // Remove existing dynamic friends, but keep the static placeholder
-        Array.from(list.children).forEach(child => {
-            if (child.classList.contains('online-friend-item')) {
-                child.remove();
-            }
-        });
+        // Remove previously added friends
+        list.querySelectorAll('.online-friend-item').forEach(item => item.remove());
 
-        if (dummyOnlineFriends.length === 0) {
+        if (onlineFriendsFromDatabase.length === 0) {
             placeholder.style.display = 'block';
             return;
         }
         
         placeholder.style.display = 'none';
 
-        dummyOnlineFriends.forEach(friend => {
+        onlineFriendsFromDatabase.forEach(friend => {
+            // Note: When using Firebase, you would load real PFP URLs here.
+            const pfpUrl = friend.pfp || `https://via.placeholder.com/35x35.png?text=${friend.username.charAt(0)}`;
+
             const item = document.createElement('div');
             item.className = 'online-friend-item';
-            item.setAttribute('onclick', `openChat('${friend.id}')`);
+            // IMPORTANT: In a real app, openChat would take the user's REAL UID, not just their username.
+            item.setAttribute('onclick', `openChat('${friend.id}')`); 
             
             item.innerHTML = `
                 <div class="online-pfp">
-                    <img src="${friend.pfp}" alt="${friend.username} PFP">
-                    <div class="online-dot"></div>
+                    <img src="${pfpUrl}" alt="${friend.username} PFP">
+                    <div class="online-dot" style="background-color: var(--status-online);"></div>
                 </div>
                 <span class="online-username">${friend.username}</span>
             `;
@@ -1425,12 +1379,15 @@ right: 30px;
     }
 
     function openChat(friendId) {
-        alert(`Opening chat with ${friendId}. (This would open a chat interface in a real app)`);
+        // This function would be where you start setting up your real-time chat interface
+        alert(`Initializing real-time chat with User ID: ${friendId}. 
+(You need Firebase Authentication and Firestore/RTDB listeners implemented here to make it live.)`);
     }
 
     // =======================================================
     // [F] SETTINGS LOGIC (Performance, Export/Import)
     // =======================================================
+    // (No changes to these utility functions)
     let snowfallInterval;
     let bellfallInterval;
 
@@ -1543,12 +1500,11 @@ right: 30px;
                 const currentMode = localStorage.getItem('performanceMode');
                 const importedMode = importedData.performanceMode || 'high';
                 if (currentMode !== importedMode) {
-                    // Check button text state to decide if we need to call with force true/false
                     const isCurrentlyLow = document.body.classList.contains('performance-mode-low');
                     if (importedMode === 'low' && !isCurrentlyLow) {
-                         togglePerformanceMode(false); // Call with false to toggle ON
+                         togglePerformanceMode(false); 
                     } else if (importedMode === 'high' && isCurrentlyLow) {
-                         togglePerformanceMode(false); // Call with false to toggle OFF
+                         togglePerformanceMode(false); 
                     }
                 }
                 
@@ -1571,7 +1527,7 @@ right: 30px;
         loadFavorites();
         updateRecentPlayedUI();
         
-        // Check local storage for performance mode preference and initialize
+        // Performance Mode initialization
         if (localStorage.getItem('performanceMode') === 'low') {
              togglePerformanceMode(true); 
         } else {
